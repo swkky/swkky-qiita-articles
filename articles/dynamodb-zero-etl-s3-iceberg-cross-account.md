@@ -1,19 +1,9 @@
 ---
-title: 【クロスアカウント】DynamoDB Zero-ETL → S3（Iceberg）ターゲットの構築手順と注意点
-tags:
-  - AWS
-  - DynamoDB
-  - glue
-  - iceberg
-  - lakeformation
-private: false
-updated_at: '2026-08-12T09:46:30+09:00'
-id: 0cf7c6f86560e848def9
-organization_url_name: null
-slide: false
-ignorePublish: false
-posting_campaign_uuid: null
-agreed_posting_campaign_term: false
+title: "【クロスアカウント】DynamoDB Zero-ETL → S3（Iceberg）ターゲットの構築手順と注意点"
+emoji: "🔄"
+type: "tech"
+topics: ["AWS", "DynamoDB", "Glue", "Iceberg", "LakeFormation"]
+published: true
 ---
 ## はじめに
 
@@ -59,11 +49,11 @@ aws glue create-database \
   --region ap-northeast-1
 ```
 
-:::note warn
+:::message alert
 **Database 名にハイフン（`-`）は使用不可。** `my-database` のような名前で作成すると、統合作成時に `contains invalid characters` エラーになります。アンダースコア（`_`）を使ってください。
 :::
 
-:::note info
+:::message
 `LocationUri` は**必須**。設定されていない Database は Zero-ETL ターゲットとして使用できません。
 :::
 
@@ -89,7 +79,7 @@ aws glue get-integration-resource-property \
 
 SageMaker Unified Studio（DataZone）を有効化した環境では、Lake Formation の権限モデルが適用されています（`CreateDatabaseDefaultPermissions: []`）。この場合、IAM ポリシーだけではアクセスできず、明示的な Lake Formation 権限付与が必要です。
 
-:::note warn
+:::message alert
 Lake Formation の権限設定が不足していると、統合が `NEEDS_ATTENTION` 状態になり以下のエラーが出ます:
 > Authorization failed because the target role does not have access to the target database due to Lake Formation permissions.
 :::
@@ -151,7 +141,7 @@ aws lakeformation grant-permissions \
   --region ap-northeast-1
 ```
 
-:::note warn
+:::message alert
 この設定が無いと、Athena からは直接クエリ可能なのに SageMaker Unified Studio の UI ではデータベースが表示されない、という状態になります。
 :::
 
@@ -202,7 +192,7 @@ aws glue get-resource-policy --region ap-northeast-1  # 既存ポリシーを確
 }
 ```
 
-:::note alert
+:::message alert
 既存のポリシーを上書きしないこと。`get-resource-policy` で取得した JSON の `Statement` 配列にマージしてから `put-resource-policy` を実行してください。
 :::
 
@@ -218,7 +208,7 @@ aws glue create-integration-table-properties \
   --region ap-northeast-1
 ```
 
-:::note info
+:::message
 クロスアカウントの場合、この API は**ターゲットアカウントから**実行する必要があります。AWS Glue Console の自動設定（Fix it for me）はクロスアカウントでは使えません。
 :::
 
@@ -350,7 +340,7 @@ resource "awscc_glue_integration" "dynamodb" {
 }
 ```
 
-:::note info
+:::message
 `target_arn` には **Glue Database ARN** を指定します（Catalog ARN ではありません）。
 :::
 
@@ -369,7 +359,7 @@ resource "awscc_glue_integration" "dynamodb" {
 8. [ソース A]     Zero-ETL 統合作成（CreateIntegration）
 ```
 
-:::note alert
+:::message alert
 クロスアカウントでは **「Fix it for me」オプションは使用不可**。全て手動設定が必要です。
 :::
 
@@ -446,7 +436,7 @@ s3://my-bucket/path/to/iceberg/
 | 最大 | 8640 分（6日） |
 | 作成後の変更 | **S3 ターゲットの場合は可能**（`ModifyIntegration` API） |
 
-:::note info
+:::message
 Redshift ターゲットでは RefreshInterval は作成後に変更不可ですが、S3（Glue Database）ターゲットでは変更可能です。これは S3 ターゲットの大きなメリットです。
 :::
 
