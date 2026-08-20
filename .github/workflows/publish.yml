@@ -75,12 +75,13 @@ jobs:
                   echo "🔒 Setting private on Qiita: $item_id"
                   current=$(curl -s "https://qiita.com/api/v2/items/$item_id" \
                     -H "Authorization: Bearer $QIITA_TOKEN")
-                  # jqで安全にリクエストボディを構築
-                  patch_body=$(echo "$current" | jq '{title: .title, body: .body, tags: .tags, private: true}')
-                  curl -s -X PATCH "https://qiita.com/api/v2/items/$item_id" \
+                  # jqで安全にリクエストボディを構築してファイルに書き出し
+                  echo "$current" | jq '{title: .title, body: .body, tags: .tags, private: true}' > /tmp/patch_body.json
+                  result=$(curl -s -X PATCH "https://qiita.com/api/v2/items/$item_id" \
                     -H "Authorization: Bearer $QIITA_TOKEN" \
                     -H "Content-Type: application/json" \
-                    -d "$patch_body"
+                    -d @/tmp/patch_body.json)
+                  echo "$result" | jq '{private: .private, title: .title}'
                 fi
               fi
               continue
