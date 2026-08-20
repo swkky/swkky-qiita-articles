@@ -17,13 +17,111 @@ jobs:
   publish_articles:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    env:
+      QIITA_TOKEN: ${{ secrets.QIITA_TOKEN }}
+      REPO_URL: ${{ github.server_url }}/${{ github.repository }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Run zenn-qiita-sync
-        uses: C-Naoki/zenn-qiita-sync@main
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          qiita-token: ${{ secrets.QIITA_TOKEN }}
+          node-version: "20"
+
+      - name: Get changed markdown files
+        id: files
+        run: |
+          git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep "^articles/.*\.md$" > changed_files.txt || true
+          if [ -s changed_files.txt ]; then
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+            echo "📋 Changed files:"
+            cat changed_files.txt
+          else
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            echo "⏭️ No article changes detected"
+          fi
+
+      - name: Process articles
+        if: steps.files.outputs.has_changes == 'true'
+        run: |
+          for file in $(cat changed_files.txt); do
+            filename=$(basename "$file" .md)
+            qiita_file="qiita/public/$filename.md"
+
+            # ファイルが削除された場合
+            if [ ! -f "$file" ]; then
+              echo "🗑️ Article deleted: $file"
+              if [ -f "$qiita_file" ]; then
+                item_id=$(grep "^id:" "$qiita_file" | awk '{print $2}' | tr -d '"' | tr -d "'")
+                if [ -n "$item_id" ] && [ "$item_id" != "null" ]; then
+                  echo "🗑️ Deleting from Qiita: $item_id"
+                  curl -s -X DELETE "https://qiita.com/api/v2/items/$item_id" \
+                    -H "Authorization: Bearer $QIITA_TOKEN"
+                fi
+                rm "$qiita_file"
+              fi
+              continue
+            fi
+
+            # published: false の場合 → Qiita上で限定公開にする
+            if grep -q "published: false" "$file"; then
+              echo "🔒 Unpublishing: $file"
+              if [ -f "$qiita_file" ]; then
+                item_id=$(grep "^id:" "$qiita_file" | awk '{print $2}' | tr -d '"' | tr -d "'")
+                if [ -n "$item_id" ] && [ "$item_id" != "null" ]; then
+                  echo "🔒 Setting private on Qiita: $item_id"
+                  # 記事の現在の情報を取得してtitleとbodyを保持
+                  current=$(curl -s "https://qiita.com/api/v2/items/$item_id" \
+                    -H "Authorization: Bearer $QIITA_TOKEN")
+                  title=$(echo "$current" | jq -r '.title')
+                  body=$(echo "$current" | jq -r '.body')
+                  tags=$(echo "$current" | jq -c '.tags')
+                  curl -s -X PATCH "https://qiita.com/api/v2/items/$item_id" \
+                    -H "Authorization: Bearer $QIITA_TOKEN" \
+                    -H "Content-Type: application/json" \
+                    -d "{\"title\":\"$title\",\"body\":$(echo "$body" | jq -Rs .),\"tags\":$tags,\"private\":true}"
+                fi
+              fi
+              continue
+            fi
+
+            # published: true の場合 → 変換して投稿
+            if grep -q "published: true" "$file"; then
+              echo "🚀 Converting: $file"
+              node scripts/convert.js "$file" "$qiita_file" --repo-url "$REPO_URL"
+            fi
+          done
+
+      - name: Install qiita-cli
+        if: steps.files.outputs.has_changes == 'true'
+        run: npm install @qiita/qiita-cli --save-dev
+
+      - name: Publish to Qiita
+        if: steps.files.outputs.has_changes == 'true'
+        run: |
+          if compgen -G "qiita/public/*.md" > /dev/null 2>&1; then
+            npx qiita publish --all
+          else
+            echo "⏭️ No Qiita articles to publish"
+          fi
+        env:
+          QIITA_TOKEN: ${{ secrets.QIITA_TOKEN }}
+
+      - name: Commit and push changes
+        if: steps.files.outputs.has_changes == 'true'
+        run: |
+          rm -f changed_files.txt package-lock.json
+          # qiita-cliのpackage.jsonを削除（ルートのpackage.jsonは保持）
+          git checkout -- package.json 2>/dev/null || true
+          git config --local user.name "${{ github.actor }}"
+          git config --local user.email "${{ github.actor }}@users.noreply.github.com"
+          git add qiita/public/
+          if git diff --cached --quiet; then
+            echo "⏭️ No changes to commit"
+          else
+            git commit -m "Sync Qiita articles"
+            git push
+          fi

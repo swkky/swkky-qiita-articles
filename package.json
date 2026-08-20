@@ -5,7 +5,8 @@
   "scripts": {
     "new": "npx zenn new:article",
     "preview": "npx zenn preview --open",
-    "list": "npx zenn list:articles"
+    "list": "npx zenn list:articles",
+    "convert": "node scripts/convert.js"
   },
   "devDependencies": {
     "zenn-cli": "^0.1.157"

@@ -2,15 +2,21 @@
 
 ZennとQiitaの技術記事を1つのリポジトリで一括管理するテンプレートです。
 
-1つのMarkdownを書いて `git push` するだけで、ZennとQiita両方に自動投稿されます。
+1つのMarkdownを書いて `git push` するだけで、ZennとQiita両方に自動投稿されます。外部Actionへの依存なしで、記事の非公開化・削除にも対応しています。
 
 ## 仕組み
 
 - `articles/` にZenn形式のMarkdownで記事を書く
-- `git push` すると GitHub Actions が自動で Qiita 形式に変換して投稿
+- `git push` すると GitHub Actions が自前スクリプトでQiita形式に変換して投稿
 - Zenn側はGitHub連携で自動反映
 
-変換には [zenn-qiita-sync](https://github.com/C-Naoki/zenn-qiita-sync) を使用しています。
+## 特徴
+
+- ✅ 外部Actionへの依存なし（自前の変換スクリプト）
+- ✅ `published: false` → Qiita上で自動的に限定公開化
+- ✅ 記事ファイルを削除 → Qiita上で自動的に記事を削除
+- ✅ Zenn独自記法をQiita記法に自動変換
+- ✅ 画像パスをGitHub raw URLに自動変換
 
 ## セットアップ
 
@@ -51,9 +57,21 @@ npm run new -- --slug my-article-slug --title "記事タイトル"
 npm run preview
 ```
 
+ブラウザが自動で開き、Zenn形式のプレビューが確認できます。
+
 ### 記事を公開
 
 記事の front matter で `published: true` にして `git push` するだけ。
+
+### push時の注意
+
+GitHub Actions が Qiita 形式のファイルを自動生成してコミットするため、次回 push 前に pull が必要になります。以下のエイリアスを設定しておくと便利です：
+
+```bash
+git config --local alias.pp '!git pull --rebase && git push'
+```
+
+以降は `git pp` で pull & push を一度に実行できます。
 
 ## 記事の非公開・削除
 
@@ -61,23 +79,22 @@ npm run preview
 
 | プラットフォーム | 方法 |
 |---|---|
-| Zenn | front matter で `published: false` にして `git push` すれば非公開になる |
-| Qiita | ワークフローは非公開化に対応していない。[Qiita のマイページ](https://qiita.com/mine)から手動で限定公開 or 削除する |
+| Zenn | front matter で `published: false` にして `git push` |
+| Qiita | 同上。ワークフローが自動で Qiita API を呼び出し、限定公開に変更する |
 
 ### 削除したい場合
 
 | プラットフォーム | 方法 |
 |---|---|
-| Zenn | `articles/` からファイルを削除して `git push` すれば非公開になる |
-| Qiita | ワークフローは削除に対応していない。[Qiita のマイページ](https://qiita.com/mine)から手動で削除する |
-
-> ⚠️ Qiita API 自体には記事の削除・更新エンドポイント（`DELETE /api/v2/items/:item_id`、`PATCH` で `private: true`）が存在しますが、[zenn-qiita-sync](https://github.com/C-Naoki/zenn-qiita-sync/blob/main/action.yml) のワークフローはこれらを呼び出していません。`published: false` にしても変換がスキップされるだけで、Qiita上の既存記事はそのまま残ります。
+| Zenn | `articles/` からファイルを削除して `git push` |
+| Qiita | 同上。ワークフローが自動で Qiita API を呼び出し、記事を削除する |
 
 ## ディレクトリ構成
 
 ```
 .
-├── .github/workflows/publish.yml  # Qiita自動投稿用のGitHub Actions
+├── .github/workflows/publish.yml  # 自動変換・投稿ワークフロー
+├── scripts/convert.js             # Zenn → Qiita 変換スクリプト
 ├── articles/                      # ★ 記事を書く場所（Zenn形式Markdown）
 ├── books/                         # Zennの本（任意）
 ├── images/                        # 記事で使う画像
@@ -99,11 +116,15 @@ published: true  # trueにするとZenn・Qiita両方に公開
 ここから本文を書く...
 ```
 
-## 技術スタック
+## 変換される記法
 
-- [Zenn CLI](https://zenn.dev/zenn/articles/install-zenn-cli) - 記事の作成・プレビュー
-- [zenn-qiita-sync](https://github.com/C-Naoki/zenn-qiita-sync) - Zenn形式 → Qiita形式の自動変換・投稿
-- GitHub Actions - 自動化
+| Zenn | Qiita |
+|---|---|
+| `:::message` | `:::note info` |
+| `:::message alert` | `:::note alert` |
+| `/images/xxx.png` | GitHub raw URL |
+| `topics: [...]` | `tags:\n  - ...` |
+| `published: true` | `private: false` |
 
 ## GitHub Actionsの料金
 
