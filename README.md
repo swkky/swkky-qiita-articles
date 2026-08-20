@@ -16,7 +16,9 @@ ZennとQiitaの技術記事を1つのリポジトリで一括管理するテン�
 
 ### 1. このリポジトリをテンプレートとして使う
 
-このリポジトリをforkまたはcloneして、自分のリポジトリとして作成してください。
+このリポジトリをforkまたはcloneして、自分のPrivateリポジトリとして作成してください。
+
+> 💡 HTTPS経由でpushする場合、Personal Access Token（PAT）に `repo` と `workflow` スコープが必要です。`workflow` がないと `.github/workflows/` 配下のファイルをpushできません。
 
 ### 2. 依存関係のインストール
 
@@ -48,6 +50,8 @@ npm run new -- --slug my-article-slug --title "記事タイトル"
 ```bash
 npm run preview
 ```
+
+ブラウザが自動で開き、Zenn形式のプレビューが確認できます。
 
 ### 記事を公開
 
@@ -112,6 +116,13 @@ published: true  # trueにするとZenn・Qiita両方に公開
 - [Zenn CLI](https://zenn.dev/zenn/articles/install-zenn-cli) - 記事の作成・プレビュー
 - [zenn-qiita-sync](https://github.com/C-Naoki/zenn-qiita-sync) - Zenn形式 → Qiita形式の自動変換・投稿
 - GitHub Actions - 自動化
+
+## GitHub Actionsの料金
+
+- **Publicリポジトリ**: 完全無料
+- **Privateリポジトリ**: 月2,000分まで無料（Freeプラン）
+
+記事pushの1回あたり数十秒程度なので、Privateリポジトリで運用しても無料枠を超えることはまずありません。
 
 ## ライセンス
 
