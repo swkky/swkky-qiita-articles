@@ -1,16 +1,19 @@
 ---
 title: 【クロスアカウント】DynamoDB Zero-ETL → S3（Iceberg）ターゲットの構築手順と注意点
-private: false
 tags:
   - AWS
   - DynamoDB
-  - Glue
-  - Iceberg
-  - LakeFormation
-updated_at: '2026-08-20T08:14:28.941Z'
-id: null
+  - glue
+  - iceberg
+  - lakeformation
+private: false
+updated_at: '2026-08-20T17:14:38+09:00'
+id: 4b4a0df5158153233a22
 organization_url_name: null
 slide: false
+ignorePublish: false
+posting_campaign_uuid: null
+agreed_posting_campaign_term: false
 ---
 ## はじめに
 
