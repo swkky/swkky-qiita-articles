@@ -51,21 +51,9 @@ npm run new -- --slug my-article-slug --title "記事タイトル"
 npm run preview
 ```
 
-ブラウザが自動で開き、Zenn形式のプレビューが確認できます。
-
 ### 記事を公開
 
 記事の front matter で `published: true` にして `git push` するだけ。
-
-### push時の注意
-
-GitHub Actions が Qiita 形式のファイルを自動生成してコミットするため、次回 push 前に pull が必要になります。以下のエイリアスを設定しておくと便利です：
-
-```bash
-git config --local alias.pp '!git pull --rebase && git push'
-```
-
-以降は `git pp` で pull & push を一度に実行できます。
 
 ## 記事の非公開・削除
 
@@ -121,8 +109,6 @@ published: true  # trueにするとZenn・Qiita両方に公開
 
 - **Publicリポジトリ**: 完全無料
 - **Privateリポジトリ**: 月2,000分まで無料（Freeプラン）
-
-記事pushの1回あたり数十秒程度なので、Privateリポジトリで運用しても無料枠を超えることはまずありません。
 
 ## ライセンス
 
