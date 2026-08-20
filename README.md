@@ -7,7 +7,7 @@ ZennとQiitaの技術記事を1つのリポジトリで一括管理するリポ�
 ## 仕組み
 
 - `articles/` にZenn形式のMarkdownで記事を書く
-- `git push` すると GitHub Actions が自前スクリプトでQiita形式に変換して投稿
+- `git push` すると GitHub Actions（[zenn-qiita-sync](https://github.com/C-Naoki/zenn-qiita-sync)）が自動でQiita形式に変換して投稿
 - Zenn側はGitHub連携で自動反映
 
 ## セットアップ
@@ -26,6 +26,8 @@ npm install
 
 1. [Qiita のトークン発行画面](https://qiita.com/settings/tokens/new) で `read_qiita` と `write_qiita` 権限付きのトークンを発行
 2. GitHub リポジトリの Settings > Secrets and variables > Actions > **Repository secrets** に `QIITA_TOKEN` として登録
+
+> ⚠️ Environment secrets ではなく **Repository secrets** に登録してください。
 
 ## 使い方
 
@@ -49,11 +51,13 @@ npm run preview
 
 ### push時の注意
 
-GitHub Actions が Qiita 形式のファイルを自動生成してコミットするため、次回 push 前に pull が必要になります。
+GitHub Actions が Qiita 形式のファイルを自動生成してコミットするため、次回 push 前に pull が必要になります。以下のエイリアスを設定しておくと便利です：
 
 ```bash
-git pull --rebase && git push'
+git config --local alias.pp '!git pull --rebase && git push'
 ```
+
+以降は `git pp` で pull & push を一度に実行できます。
 
 ## 記事の非公開・削除
 
@@ -61,12 +65,12 @@ git pull --rebase && git push'
 
 1. front matter を `published: false` にして `git push`
 2. **Zenn** → 自動で非公開になる
-3. **Qiita** → 変化なし（公開後の非公開化はQiitaの仕様で不可）。[マイページ](https://qiita.com/mine)から手動で削除してください
+3. **Qiita** → 変化なし。[マイページ](https://qiita.com/mine)から手動で削除してください
 
 ### 削除したい場合
 
 1. **Zenn** → [ダッシュボード](https://zenn.dev/dashboard)から手動で削除。その後リポジトリからもファイルを削除してpush（ファイルが残っていると次回デプロイで復活する）
-2. **Qiita** → リポジトリからファイルを削除して `git push` すれば自動で削除される
+2. **Qiita** → [マイページ](https://qiita.com/mine)から手動で削除
 
 ### プラットフォームの制約
 
@@ -77,8 +81,7 @@ git pull --rebase && git push'
 
 ```
 .
-├── .github/workflows/publish.yml  # 自動変換・投稿ワークフロー
-├── scripts/convert.js             # Zenn → Qiita 変換スクリプト
+├── .github/workflows/publish.yml  # Qiita自動投稿用のGitHub Actions
 ├── articles/                      # ★ 記事を書く場所（Zenn形式Markdown）
 ├── books/                         # Zennの本（任意）
 ├── images/                        # 記事で使う画像
@@ -99,13 +102,3 @@ published: true  # trueにするとZenn・Qiita両方に公開
 
 ここから本文を書く...
 ```
-
-## 変換される記法
-
-| Zenn | Qiita |
-|---|---|
-| `:::message` | `:::note info` |
-| `:::message alert` | `:::note alert` |
-| `/images/xxx.png` | GitHub raw URL |
-| `topics: [...]` | `tags:\n  - ...` |
-| `published: true` | `private: false` |

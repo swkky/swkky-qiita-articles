@@ -1,12 +1,11 @@
 {
-  "name": "zenn-qiita-articles",
+  "name": "swkky-zenn-qiita-articles",
   "private": true,
   "description": "ZennとQiitaの技術記事を一括管理するリポジトリ",
   "scripts": {
     "new": "npx zenn new:article",
     "preview": "npx zenn preview --open",
-    "list": "npx zenn list:articles",
-    "convert": "node scripts/convert.js"
+    "list": "npx zenn list:articles"
   },
   "devDependencies": {
     "zenn-cli": "^0.1.157"
