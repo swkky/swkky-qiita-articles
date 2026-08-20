@@ -51,7 +51,7 @@ jobs:
             filename=$(basename "$file" .md)
             qiita_file="qiita/public/$filename.md"
 
-            # ファイルが削除された場合
+            # ファイルが削除された場合 → Qiitaから削除
             if [ ! -f "$file" ]; then
               echo "🗑️ Article deleted: $file"
               if [ -f "$qiita_file" ]; then
@@ -60,19 +60,20 @@ jobs:
                   echo "🗑️ Deleting from Qiita: $item_id"
                   curl -s -X DELETE "https://qiita.com/api/v2/items/$item_id" \
                     -H "Authorization: Bearer $QIITA_TOKEN"
+                  echo "✅ Deleted: $item_id"
                 fi
                 rm "$qiita_file"
               fi
               continue
             fi
 
-            # published: false の場合 → スキップ（Qiitaは公開後に非公開化できない仕様）
+            # published: false → スキップ
             if grep -q "published: false" "$file"; then
-              echo "⏭️ Skip: $file (published: false, Qiita does not support unpublishing)"
+              echo "⏭️ Skip: $file (published: false)"
               continue
             fi
 
-            # published: true の場合 → 変換して投稿
+            # published: true → 変換
             if grep -q "published: true" "$file"; then
               echo "🚀 Converting: $file"
               node scripts/convert.js "$file" "$qiita_file" --repo-url "$REPO_URL"
@@ -90,6 +91,11 @@ jobs:
             private=$(sed -n 's/^private: *//p' "$qiita_file")
             item_id=$(sed -n 's/^id: *//p' "$qiita_file" | tr -d '"' | tr -d "'")
             slide=$(sed -n 's/^slide: *//p' "$qiita_file")
+
+            # private: true（未公開）はスキップ
+            if [ "$private" = "true" ]; then
+              continue
+            fi
 
             # tagsをJSON配列に変換
             tags=$(awk '/^tags:/{found=1; next} found && /^  - /{gsub(/^  - /,""); names=names"\""$0"\","; next} found{exit} END{gsub(/,$/,"",names); print "["names"]"}' "$qiita_file")
@@ -109,7 +115,6 @@ jobs:
               new_id=$(echo "$response" | jq -r '.id')
               if [ -n "$new_id" ] && [ "$new_id" != "null" ]; then
                 echo "✅ Published: $new_id"
-                # idをファイルに書き戻す
                 sed -i "s/^id: .*/id: $new_id/" "$qiita_file"
               else
                 echo "❌ Failed to publish: $(echo "$response" | jq -r '.message // .type // "unknown error"')"
@@ -117,10 +122,10 @@ jobs:
             else
               # 更新
               echo "📝 Updating article: $item_id"
-              response=$(curl -s -X PATCH "https://qiita.com/api/v2/items/$item_id" \
+              curl -s -X PATCH "https://qiita.com/api/v2/items/$item_id" \
                 -H "Authorization: Bearer $QIITA_TOKEN" \
                 -H "Content-Type: application/json" \
-                -d "{\"title\":\"$title\",\"body\":$body_json,\"tags\":$tags_json,\"private\":$private,\"slide\":${slide:-false}}")
+                -d "{\"title\":\"$title\",\"body\":$body_json,\"tags\":$tags_json,\"private\":$private,\"slide\":${slide:-false}}" > /dev/null
               echo "✅ Updated: $item_id"
             fi
           done
@@ -128,9 +133,7 @@ jobs:
       - name: Commit and push changes
         if: steps.files.outputs.has_changes == 'true'
         run: |
-          rm -f changed_files.txt package-lock.json
-          # qiita-cliのpackage.jsonを削除（ルートのpackage.jsonは保持）
-          git checkout -- package.json 2>/dev/null || true
+          rm -f changed_files.txt
           git config --local user.name "${{ github.actor }}"
           git config --local user.email "${{ github.actor }}@users.noreply.github.com"
           git add qiita/public/

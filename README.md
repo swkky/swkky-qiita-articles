@@ -1,8 +1,8 @@
-# zenn-qiita-articles
+# swkky-zenn-qiita-articles
 
-ZennとQiitaの技術記事を1つのリポジトリで一括管理するテンプレートです。
+ZennとQiitaの技術記事を1つのリポジトリで一括管理するリポジトリ。
 
-1つのMarkdownを書いて `git push` するだけで、ZennとQiita両方に自動投稿されます。外部Actionへの依存なしで、記事の非公開化・削除にも対応しています。
+1つのMarkdownを書いて `git push` するだけで、ZennとQiita両方に自動投稿されます。
 
 ## 仕組み
 
@@ -10,38 +10,22 @@ ZennとQiitaの技術記事を1つのリポジトリで一括管理するテン�
 - `git push` すると GitHub Actions が自前スクリプトでQiita形式に変換して投稿
 - Zenn側はGitHub連携で自動反映
 
-## 特徴
-
-- ✅ 外部Actionへの依存なし（自前の変換スクリプト）
-- ✅ `published: false` → Qiita上で自動的に限定公開化
-- ✅ 記事ファイルを削除 → Qiita上で自動的に記事を削除
-- ✅ Zenn独自記法をQiita記法に自動変換
-- ✅ 画像パスをGitHub raw URLに自動変換
-
 ## セットアップ
 
-### 1. このリポジトリをテンプレートとして使う
-
-このリポジトリをforkまたはcloneして、自分のPrivateリポジトリとして作成してください。
-
-> 💡 HTTPS経由でpushする場合、Personal Access Token（PAT）に `repo` と `workflow` スコープが必要です。`workflow` がないと `.github/workflows/` 配下のファイルをpushできません。
-
-### 2. 依存関係のインストール
+### 1. 依存関係のインストール
 
 ```bash
 npm install
 ```
 
-### 3. Zenn との連携
+### 2. Zenn との連携
 
-[Zenn のダッシュボード](https://zenn.dev/dashboard/deploys) からリポジトリを連携する。
+[Zenn のダッシュボード](https://zenn.dev/dashboard/deploys) からこのリポジトリを連携する。
 
-### 4. Qiita との連携
+### 3. Qiita との連携
 
 1. [Qiita のトークン発行画面](https://qiita.com/settings/tokens/new) で `read_qiita` と `write_qiita` 権限付きのトークンを発行
 2. GitHub リポジトリの Settings > Secrets and variables > Actions > **Repository secrets** に `QIITA_TOKEN` として登録
-
-> ⚠️ Environment secrets ではなく **Repository secrets** に登録してください。
 
 ## 使い方
 
@@ -65,29 +49,29 @@ npm run preview
 
 ### push時の注意
 
-GitHub Actions が Qiita 形式のファイルを自動生成してコミットするため、次回 push 前に pull が必要になります。以下のエイリアスを設定しておくと便利です：
+GitHub Actions が Qiita 形式のファイルを自動生成してコミットするため、次回 push 前に pull が必要になります。
 
 ```bash
-git config --local alias.pp '!git pull --rebase && git push'
+git pull --rebase && git push'
 ```
-
-以降は `git pp` で pull & push を一度に実行できます。
 
 ## 記事の非公開・削除
 
 ### 非公開にしたい場合
 
-| プラットフォーム | 方法 |
-|---|---|
-| Zenn | front matter で `published: false` にして `git push` |
-| Qiita | 同上。ワークフローが自動で Qiita API を呼び出し、限定公開に変更する |
+1. front matter を `published: false` にして `git push`
+2. **Zenn** → 自動で非公開になる
+3. **Qiita** → 変化なし（公開後の非公開化はQiitaの仕様で不可）。[マイページ](https://qiita.com/mine)から手動で削除してください
 
 ### 削除したい場合
 
-| プラットフォーム | 方法 |
-|---|---|
-| Zenn | `articles/` からファイルを削除して `git push` |
-| Qiita | 同上。ワークフローが自動で Qiita API を呼び出し、記事を削除する |
+1. **Zenn** → [ダッシュボード](https://zenn.dev/dashboard)から手動で削除。その後リポジトリからもファイルを削除してpush（ファイルが残っていると次回デプロイで復活する）
+2. **Qiita** → リポジトリからファイルを削除して `git push` すれば自動で削除される
+
+### プラットフォームの制約
+
+- **Qiita**: 一度全体公開した記事を限定共有（非公開）に戻すことはできません（[公式ヘルプ](https://help.qiita.com/ja/articles/qiita-post)）
+- **Zenn**: GitHub連携でリポジトリからファイルを削除しても記事は削除されません。削除はダッシュボードからのみ可能です（[公式ドキュメント](https://zenn.dev/zenn/articles/connect-to-github#コンテンツの削除)）
 
 ## ディレクトリ構成
 
@@ -125,12 +109,3 @@ published: true  # trueにするとZenn・Qiita両方に公開
 | `/images/xxx.png` | GitHub raw URL |
 | `topics: [...]` | `tags:\n  - ...` |
 | `published: true` | `private: false` |
-
-## GitHub Actionsの料金
-
-- **Publicリポジトリ**: 完全無料
-- **Privateリポジトリ**: 月2,000分まで無料（Freeプラン）
-
-## ライセンス
-
-MIT
