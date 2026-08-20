@@ -95,20 +95,51 @@ jobs:
             fi
           done
 
-      - name: Install qiita-cli
-        if: steps.files.outputs.has_changes == 'true'
-        run: npm install @qiita/qiita-cli --save-dev
-
       - name: Publish to Qiita
         if: steps.files.outputs.has_changes == 'true'
         run: |
-          if compgen -G "qiita/public/*.md" > /dev/null 2>&1; then
-            npx qiita publish --all
-          else
-            echo "⏭️ No Qiita articles to publish"
-          fi
-        env:
-          QIITA_TOKEN: ${{ secrets.QIITA_TOKEN }}
+          for qiita_file in qiita/public/*.md; do
+            [ -f "$qiita_file" ] || continue
+
+            # front matterをパース
+            title=$(sed -n 's/^title: *//p' "$qiita_file" | tr -d '"')
+            private=$(sed -n 's/^private: *//p' "$qiita_file")
+            item_id=$(sed -n 's/^id: *//p' "$qiita_file" | tr -d '"' | tr -d "'")
+            slide=$(sed -n 's/^slide: *//p' "$qiita_file")
+
+            # tagsをJSON配列に変換
+            tags=$(awk '/^tags:/{found=1; next} found && /^  - /{gsub(/^  - /,""); names=names"\""$0"\","; next} found{exit} END{gsub(/,$/,"",names); print "["names"]"}' "$qiita_file")
+            tags_json=$(echo "$tags" | jq '[.[] | {name: ., versions: []}]')
+
+            # 本文を取得（front matter以降）
+            body=$(awk 'BEGIN{n=0} /^---$/{n++; if(n==2){found=1; next}} found{print}' "$qiita_file")
+            body_json=$(echo "$body" | jq -Rs .)
+
+            if [ -z "$item_id" ] || [ "$item_id" = "null" ]; then
+              # 新規投稿
+              echo "📝 Creating new article: $title"
+              response=$(curl -s -X POST "https://qiita.com/api/v2/items" \
+                -H "Authorization: Bearer $QIITA_TOKEN" \
+                -H "Content-Type: application/json" \
+                -d "{\"title\":\"$title\",\"body\":$body_json,\"tags\":$tags_json,\"private\":$private,\"slide\":${slide:-false}}")
+              new_id=$(echo "$response" | jq -r '.id')
+              if [ -n "$new_id" ] && [ "$new_id" != "null" ]; then
+                echo "✅ Published: $new_id"
+                # idをファイルに書き戻す
+                sed -i "s/^id: .*/id: $new_id/" "$qiita_file"
+              else
+                echo "❌ Failed to publish: $(echo "$response" | jq -r '.message // .type // "unknown error"')"
+              fi
+            else
+              # 更新
+              echo "📝 Updating article: $item_id"
+              response=$(curl -s -X PATCH "https://qiita.com/api/v2/items/$item_id" \
+                -H "Authorization: Bearer $QIITA_TOKEN" \
+                -H "Content-Type: application/json" \
+                -d "{\"title\":\"$title\",\"body\":$body_json,\"tags\":$tags_json,\"private\":$private,\"slide\":${slide:-false}}")
+              echo "✅ Updated: $item_id"
+            fi
+          done
 
       - name: Commit and push changes
         if: steps.files.outputs.has_changes == 'true'
