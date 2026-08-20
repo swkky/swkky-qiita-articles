@@ -3,7 +3,7 @@ title: "ゼロ ETL 統合で自動生成される Glue 子カタログの制約�
 emoji: "🏷️"
 type: "tech"
 topics: ["AWS", "Glue", "SageMakerUnifiedStudio", "ZeroETL", "DataCatalog"]
-published: false
+published: true
 ---
 
 :::message alert
