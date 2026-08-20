@@ -74,16 +74,16 @@ git config --local alias.pp '!git pull --rebase && git push'
 | プラットフォーム | 方法 |
 |---|---|
 | Zenn | front matter で `published: false` にして `git push` すれば非公開になる |
-| Qiita | **CLI/API経由では非公開にできない**。[Qiita のマイページ](https://qiita.com/mine)から手動で限定公開 or 削除する |
+| Qiita | ワークフローは非公開化に対応していない。[Qiita のマイページ](https://qiita.com/mine)から手動で限定公開 or 削除する |
 
 ### 削除したい場合
 
 | プラットフォーム | 方法 |
 |---|---|
 | Zenn | `articles/` からファイルを削除して `git push` すれば非公開になる |
-| Qiita | GitHub からの削除では消えない。[Qiita のマイページ](https://qiita.com/mine)から手動で削除する |
+| Qiita | ワークフローは削除に対応していない。[Qiita のマイページ](https://qiita.com/mine)から手動で削除する |
 
-> ⚠️ Qiita は一度公開した記事を API 経由で非公開・削除できません。公開前に `published: false` の状態でプレビュー確認してから公開することをおすすめします。
+> ⚠️ Qiita API 自体には記事の削除・更新エンドポイント（`DELETE /api/v2/items/:item_id`、`PATCH` で `private: true`）が存在しますが、[zenn-qiita-sync](https://github.com/C-Naoki/zenn-qiita-sync/blob/main/action.yml) のワークフローはこれらを呼び出していません。`published: false` にしても変換がスキップされるだけで、Qiita上の既存記事はそのまま残ります。
 
 ## ディレクトリ構成
 
