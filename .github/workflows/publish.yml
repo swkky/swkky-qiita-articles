@@ -66,24 +66,9 @@ jobs:
               continue
             fi
 
-            # published: false の場合 → Qiita上で限定公開にする
+            # published: false の場合 → スキップ（Qiitaは公開後に非公開化できない仕様）
             if grep -q "published: false" "$file"; then
-              echo "🔒 Unpublishing: $file"
-              if [ -f "$qiita_file" ]; then
-                item_id=$(grep "^id:" "$qiita_file" | awk '{print $2}' | tr -d '"' | tr -d "'")
-                if [ -n "$item_id" ] && [ "$item_id" != "null" ]; then
-                  echo "🔒 Setting private on Qiita: $item_id"
-                  current=$(curl -s "https://qiita.com/api/v2/items/$item_id" \
-                    -H "Authorization: Bearer $QIITA_TOKEN")
-                  # jqで安全にリクエストボディを構築してファイルに書き出し
-                  echo "$current" | jq '{title: .title, body: .body, tags: .tags, private: true}' > /tmp/patch_body.json
-                  result=$(curl -s -X PATCH "https://qiita.com/api/v2/items/$item_id" \
-                    -H "Authorization: Bearer $QIITA_TOKEN" \
-                    -H "Content-Type: application/json" \
-                    -d @/tmp/patch_body.json)
-                  echo "$result" | jq '{private: .private, title: .title}'
-                fi
-              fi
+              echo "⏭️ Skip: $file (published: false, Qiita does not support unpublishing)"
               continue
             fi
 
