@@ -4,7 +4,7 @@ tags:
   - テスト
 private: false
 updated_at: ''
-id: null
+id: eab0cf4e84f2e9d2358b
 organization_url_name: null
 slide: false
 ignorePublish: false
@@ -12,7 +12,7 @@ ignorePublish: false
 
 ## テスト記事
 
-これはワークフローの動作確認用テスト記事です。
+これはワークフローの動作確認用テスト記事です。（API直接投稿テスト）
 
 :::note info
 自前変換スクリプトで変換されています。
