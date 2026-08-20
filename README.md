@@ -65,9 +65,12 @@ git config --local alias.pp '!git pull --rebase && git push'
 
 ## 記事の非公開・削除
 
-### 非公開にしたい場合（推奨）
+### 非公開にしたい場合
 
-front matter で `published: false` にして `git push` する。Zenn・Qiita両方で非公開になる。
+| プラットフォーム | 方法 |
+|---|---|
+| Zenn | front matter で `published: false` にして `git push` すれば非公開になる |
+| Qiita | **CLI/API経由では非公開にできない**。[Qiita のマイページ](https://qiita.com/mine)から手動で限定公開 or 削除する |
 
 ### 削除したい場合
 
@@ -76,7 +79,7 @@ front matter で `published: false` にして `git push` する。Zenn・Qiita�
 | Zenn | `articles/` からファイルを削除して `git push` すれば非公開になる |
 | Qiita | GitHub からの削除では消えない。[Qiita のマイページ](https://qiita.com/mine)から手動で削除する |
 
-> ⚠️ Qiita は API 経由での記事削除に対応していないため、手動対応が必要です。
+> ⚠️ Qiita は一度公開した記事を API 経由で非公開・削除できません。公開前に `published: false` の状態でプレビュー確認してから公開することをおすすめします。
 
 ## ディレクトリ構成
 
