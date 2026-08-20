@@ -73,16 +73,14 @@ jobs:
                 item_id=$(grep "^id:" "$qiita_file" | awk '{print $2}' | tr -d '"' | tr -d "'")
                 if [ -n "$item_id" ] && [ "$item_id" != "null" ]; then
                   echo "🔒 Setting private on Qiita: $item_id"
-                  # 記事の現在の情報を取得してtitleとbodyを保持
                   current=$(curl -s "https://qiita.com/api/v2/items/$item_id" \
                     -H "Authorization: Bearer $QIITA_TOKEN")
-                  title=$(echo "$current" | jq -r '.title')
-                  body=$(echo "$current" | jq -r '.body')
-                  tags=$(echo "$current" | jq -c '.tags')
+                  # jqで安全にリクエストボディを構築
+                  patch_body=$(echo "$current" | jq '{title: .title, body: .body, tags: .tags, private: true}')
                   curl -s -X PATCH "https://qiita.com/api/v2/items/$item_id" \
                     -H "Authorization: Bearer $QIITA_TOKEN" \
                     -H "Content-Type: application/json" \
-                    -d "{\"title\":\"$title\",\"body\":$(echo "$body" | jq -Rs .),\"tags\":$tags,\"private\":true}"
+                    -d "$patch_body"
                 fi
               fi
               continue
