@@ -4,7 +4,7 @@
   "description": "ZennとQiitaの技術記事を一括管理するリポジトリ",
   "scripts": {
     "new": "npx zenn new:article",
-    "preview": "npx zenn preview",
+    "preview": "npx zenn preview --open",
     "list": "npx zenn list:articles"
   },
   "devDependencies": {
