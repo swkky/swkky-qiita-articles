@@ -1,19 +1,16 @@
 ---
 title: ゼロ ETL 統合で自動生成される Glue 子カタログの制約まとめ（説明付与・削除）
+private: false
 tags:
   - AWS
-  - glue
+  - Glue
   - SageMakerUnifiedStudio
   - ZeroETL
-  - datacatalog
-private: false
+  - DataCatalog
 updated_at: '2026-08-20T17:43:30+09:00'
 id: 371f056f6846175bcbf7
 organization_url_name: null
 slide: false
-ignorePublish: false
-posting_campaign_uuid: null
-agreed_posting_campaign_term: false
 ---
 
 :::note alert
@@ -32,9 +29,8 @@ SageMaker Unified Studio を社内データ基盤の統合プラットフォー�
 
 この名前だけでは **どの子カタログがどのデータソースに対応しているか全く判別できません。**
 
-SageMaker Unified Studio をデータ基盤として社内の分析者に提供する場合、ユーザーはカタログを通じてデータを探索します。子カタログに「受注管理DB（Aurora MySQL / アカウントA）」のような説明が付与できれば、ユーザーが自律的に目的のデータへたどり着けます。
-
-しかし説明が付与できないと、別途対応表のドキュメントを用意して共有する等の運用が必要になる可能性もあるかと思います。
+SageMaker Unified Studio をデータ基盤として社内の分析者に提供する場合、ユーザーはカタログを通じてデータを探索します。子カタログに「受注管理DB（Aurora MySQL / アカウントA）」のような説明が付与できればいいなと言うのが動機です。
+説明を付与できないと、別途対応表のドキュメントを用意して共有する等の運用が必要になる可能性もあるかと思います。
 
 ## ゼロ ETL 統合のターゲット選択肢
 
@@ -67,13 +63,14 @@ RDS のゼロ ETL 統合では、ターゲットとして以下の 2 種類を�
 
 ### 課題
 
-SageMaker Unified Studio 上で子カタログを選択すると「説明」フィールドが存在しますが、**現時点ではここに任意の情報を設定する手段がありません。**
+例えば、SageMaker Unified Studio 上で子カタログを選択すると「説明」フィールドが存在しますが、**現時点ではここに任意の情報を設定する手段がありません。**
 
-子カタログ名が UUID ベースのため、ユーザーからはどのデータソース（RDS データベース）に対応しているか判別が困難です。
+他の方法も模索しましたが、子カタログに直接情報を付与する方法は現状なさそうでした。
 
 ### 代替案 A：テーブルをカタログに公開（Publish）して説明を付与
 
 子カタログ配下の**テーブル**をアセットとしてカタログに公開すると、テーブルごとに説明や README を記載できます。
+ただし、テーブル単位になるので、テーブルを大量に持つ RDS クラスターとかだとアセットも大量に必要になります。
 
 **手順：**
 
@@ -90,6 +87,7 @@ SageMaker Unified Studio 上で子カタログを選択すると「説明」フ�
 
 ### 代替案 B：Amazon Bedrock チャットエージェントアプリ + ナレッジベース
 
+一般的にデータカタログの管理、活用方法として Bedrock のナレッジベースを使用する方法が考えられます。
 SageMaker Unified Studio のプロジェクト内で Amazon Bedrock ナレッジベースを作成し、子カタログとデータソースの対応関係をまとめたドキュメントを登録した上で、チャットエージェントアプリを構築する方法です。
 
 これにより「`zetl_xxx` のデータソースは？」等のプロンプトで対応情報を取得できます。
@@ -100,7 +98,7 @@ SageMaker Unified Studio のプロジェクト内で Amazon Bedrock ナレッジ
 
 ### ⚠️ Amazon Q Developer では対応不可
 
-SageMaker Unified Studio 上の Amazon Q Developer には、任意のドキュメントをナレッジとして登録し参照させる機能はないため、Amazon Q を使って子カタログとデータソースの対応情報を回答させることはできません。
+SageMaker Unified Studio 上の Amazon Q Developer には、任意のドキュメントをナレッジとして登録し参照させる機能はないため、Amazon Q を使って子カタログとデータソースの対応情報を回答させることはできないようです。
 
 ## 制約 2：子カタログをユーザー側から削除できない
 
@@ -129,8 +127,6 @@ SageMaker Unified Studio 上の Amazon Q Developer には、任意のドキュ�
   └── カタログ: my-lakehouse-dev
         └── zetl_xxx (検証で自由に作成・カタログごと削除可能)
 ```
-
-検証用カタログが不要になった場合はカタログごと削除できるため、不要な子カタログが蓄積する問題を回避できます。
 
 ## まとめ
 
