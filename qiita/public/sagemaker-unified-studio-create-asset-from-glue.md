@@ -1,16 +1,19 @@
 ---
 title: SageMaker Unified Studio で Glue テーブルのアセットを作成する手順
-private: false
 tags:
   - AWS
   - SageMakerUnifiedStudio
   - DataZone
-  - Glue
-  - DataCatalog
-updated_at: '2026-08-21T14:59:59+09:00'
+  - glue
+  - datacatalog
+private: false
+updated_at: '2026-08-21T15:45:38+09:00'
 id: 092df5056ee13b7a9297
 organization_url_name: null
 slide: false
+ignorePublish: false
+posting_campaign_uuid: null
+agreed_posting_campaign_term: false
 ---
 
 ## アセットとは?
