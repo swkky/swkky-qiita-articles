@@ -1,19 +1,16 @@
 ---
 title: ゼロ ETL 統合で自動生成される Glue 子カタログの制約まとめ（説明付与・削除）
+private: false
 tags:
   - AWS
-  - glue
+  - Glue
   - SageMakerUnifiedStudio
   - ZeroETL
-  - datacatalog
-private: false
+  - DataCatalog
 updated_at: '2026-08-21T09:16:06+09:00'
 id: 371f056f6846175bcbf7
 organization_url_name: null
 slide: false
-ignorePublish: false
-posting_campaign_uuid: null
-agreed_posting_campaign_term: false
 ---
 
 :::note alert
@@ -62,7 +59,7 @@ RDS のゼロ ETL 統合では、ターゲットとして以下の 2 種類を�
 
 別アカウントの RDS をデータソースとしてゼロ ETL 統合を作成するたびに、ターゲットカタログ配下に `zetl_xxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx` 形式の子カタログが自動生成されます。
 
-## 制約 1：子カタログの「説明」に任意の情報を付与できない
+## 制約 1：子カタログに任意の情報を付与できない
 
 ### 課題
 
@@ -73,7 +70,7 @@ RDS のゼロ ETL 統合では、ターゲットとして以下の 2 種類を�
 ### 代替案 A：テーブルをカタログに公開（Publish）して説明を付与
 
 子カタログ配下の**テーブル**をアセットとしてカタログに公開すると、テーブルごとに説明や README を記載できます。
-ただし、テーブル単位になるので、テーブルを大量に持つ RDS クラスターとかだとアセットも大量に必要になります。
+ただし、テーブル単位になるので、テーブルを大量に持つ RDS クラスターだとアセットも大量に必要になります。
 
 **手順：**
 
@@ -91,7 +88,7 @@ RDS のゼロ ETL 統合では、ターゲットとして以下の 2 種類を�
 ### 代替案 B：Amazon Bedrock チャットエージェントアプリ + ナレッジベース
 
 一般的にデータカタログの管理、活用方法として Bedrock のナレッジベースを使用する方法が考えられます。
-SageMaker Unified Studio のプロジェクト内で Amazon Bedrock ナレッジベースを作成し、子カタログとデータソースの対応関係をまとめたドキュメントを登録した上で、チャットエージェントアプリを構築する方法です。
+今回の場合、SageMaker Unified Studio のプロジェクト内で Amazon Bedrock ナレッジベースを作成し、子カタログとデータソースの対応関係をまとめたドキュメントを登録した上で、チャットエージェントアプリを構築する方法です。
 
 これにより「`zetl_xxx` のデータソースは？」等のプロンプトで対応情報を取得できます。
 
