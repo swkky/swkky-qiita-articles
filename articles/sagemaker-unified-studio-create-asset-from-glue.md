@@ -264,6 +264,24 @@ aws datazone search \
 3. **メタデータフォームの添付** — 要件に応じてデータオーナー、更新頻度、個人情報区分等を構造化
 4. **パブリッシュ** — ドメイン全体のユーザーが検索・発見可能に
 
+## UI からの確認
+
+CLI でのデータソースラン完了後、SageMaker Unified Studio の UI からもアセットが作成されていることを確認できました。
+
+1. 左側ハンバーガーメニューの一番下 管理->アセットを選択
+2. アセットを検索 の検索窓にGlueテーブル名を入力
+3. 作成されたアセットが表示される
+
+![SageMaker Unified Studio アセット詳細画面](/images/sagemaker-unified-studio-asset-detail.jpg)
+
+アセット詳細画面では以下が確認できます:
+
+- **ビジネスメタデータタブ** — 概要、README、用語集の用語、メタデータフォームの確認・編集
+- **メタデータフォーム「AWS Glue テーブル」** — Glue データカタログ ID、データベース名、場所、リージョン、テーブル ARN 等がデータソースランにより自動設定
+- **右ペイン（アセットの詳細）** — 所有プロジェクト、ドメインユニット、サブスクリプションの承認設定、最終更新者（SYSTEM）、作成日時等
+
+ここから README の作成、用語の追加、メタデータフォームの追加、「アセットを公開」（パブリッシュ）等の次のステップに進めます。
+
 ## 参考
 
 - [Create an Amazon SageMaker Unified Studio data source for AWS Glue in the project catalog](https://docs.aws.amazon.com/sagemaker-unified-studio/latest/userguide/data-source-glue.html)
