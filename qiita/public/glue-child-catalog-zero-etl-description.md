@@ -1,16 +1,19 @@
 ---
 title: ゼロ ETL 統合で自動生成される Glue 子カタログの制約まとめ（説明付与・削除）
-private: false
 tags:
   - AWS
-  - Glue
+  - glue
   - SageMakerUnifiedStudio
   - ZeroETL
-  - DataCatalog
-updated_at: '2026-08-21T09:16:06+09:00'
+  - datacatalog
+private: false
+updated_at: '2026-08-21T09:18:28+09:00'
 id: 371f056f6846175bcbf7
 organization_url_name: null
 slide: false
+ignorePublish: false
+posting_campaign_uuid: null
+agreed_posting_campaign_term: false
 ---
 
 :::note alert
