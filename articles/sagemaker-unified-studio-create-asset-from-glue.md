@@ -3,7 +3,7 @@ title: "SageMaker Unified Studio で Glue テーブルのアセットを作成�
 emoji: "📦"
 type: "tech"
 topics: ["AWS", "SageMakerUnifiedStudio", "DataZone", "Glue", "DataCatalog"]
-published: false
+published: true
 ---
 
 ## アセットとは?
