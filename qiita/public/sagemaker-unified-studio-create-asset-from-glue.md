@@ -1,33 +1,44 @@
 ---
-title: SageMaker Unified Studio で Glue テーブルのアセットを作成する手順
+title: SageMaker Unified Studio におけるアセットとは？〜アセットの作成手順
+private: false
 tags:
   - AWS
   - SageMakerUnifiedStudio
   - DataZone
-  - glue
-  - datacatalog
-private: false
+  - Glue
+  - DataCatalog
 updated_at: '2026-08-21T15:45:38+09:00'
 id: 092df5056ee13b7a9297
 organization_url_name: null
 slide: false
-ignorePublish: false
-posting_campaign_uuid: null
-agreed_posting_campaign_term: false
 ---
 
 ## アセットとは?
 
-SageMaker Unified Studio（DataZone）における「アセット」とは、テーブルやビューなどの**データオブジェクト1つに対応するカタログ上の管理単位**です。
+SageMaker Unified Studio（DataZone）における「[アセット](https://docs.aws.amazon.com/ja_jp/datazone/latest/userguide/datazone-concepts.html#datazone-terms)」とは、テーブルやビューなどの**データオブジェクト1つに対応するカタログ上の管理単位**です。
 
 - Glue テーブル 1 つ = アセット 1 つ
-- アセットにはビジネス名、説明、グロサリー用語、メタデータフォーム等のビジネスコンテキストを付与できる
-- パブリッシュするとドメイン全体のユーザーがカタログ検索で発見可能になる
+- アセットにはビジネス名、Description、グロサリー用語、メタデータフォーム等のビジネスコンテキストを付与できる
+- パブリッシュすると Unified Studio ドメイン全体のユーザーがカタログ検索で発見可能になる (実データの参照にはサブスクリプションが必要)
 - 実データのコピーではなく、**メタデータの管理単位**
 
-SageMaker Unified Studio（DataZone V2）では、Glue Data Catalog のテーブルに対してビジネスメタデータ（グロサリー用語、メタデータフォーム、説明等）を付与してカタログとして運用したり、サブスクリプション（アクセス申請→承認）でプロジェクト間でデータアクセスを管理するには、テーブルを「アセット」としてカタログに登録する必要があります。
+SageMaker Unified Studio（DataZone V2）では、Glue Data Catalog のテーブルに対してビジネスメタデータ（グロサリー用語、メタデータフォーム、説明等）を付与してカタログとして運用したり、サブスクリプション（アクセス申請→承認）で Unified Studio のプロジェクト間でデータアクセスを管理するには、テーブルを「アセット」としてカタログに登録する必要があります。
 
-また、[SageMaker Data Agent](https://docs.aws.amazon.com/ja_jp/sagemaker-unified-studio/latest/userguide/sagemaker-data-agent.html) ではアセットに付与されたビジネスメタデータを参照して、自然言語でのデータ発見やコード生成を行うことが出来ます。Data Agent を活用した **AI Ready なデータ基盤**を構築する上でも、アセット登録とビジネスメタデータの整備は重要です。
+## なぜアセットが必要？
+
+[SageMaker Data Agent](https://docs.aws.amazon.com/sagemaker-unified-studio/latest/userguide/data-agent-business-catalog.html) ではアセットに付与されたビジネスメタデータを参照して、自然言語でデータセットを探索したり、SQL、Python などのコード生成を行うことが出来ます。Data Agent を活用した **AI Ready なデータ基盤**を構築する上で、アセット登録とビジネスメタデータの整備は重要です。  
+具体的にはアセット、ビジネスメタデータを整備することで Data Agent を利用して以下のようなことが可能になります。
+
+1. データの探索
+- 「顧客離脱に関するデータはありますか？」
+  - 該当するデータを保有する可能性があるアセットを一覧で提示してくれる。
+
+2. コード生成
+- 2026 年 Q3-Q4 における顧客維持率を計算してください。
+  - 適切なテーブル(アセット)とカラムを使用して、SQL or PySpark コードを生成してくれる。
+
+
+なお、現時点で SageMaker Data Agent は Unified Studio 内のノートブック、クエリエディタからのみ利用可能です。
 
 本記事では、AWS CLI を使って **Glue テーブルに対するデータソースを作成し、データソースランを実行してアセットを生成する**までの手順を解説します。
 
@@ -267,12 +278,22 @@ aws datazone search \
 
 ## 次のステップ
 
-アセット作成後は、以下のキュレーション作業を行うことでカタログとしての価値が高まります:
+アセットには以下のビジネスコンテキストを付与することが出来ます。
 
-1. **ビジネス名・説明の追加** — `t_dy_zaiko` → 「日次確定在庫」のように、検索しやすい名前と説明を付与
-2. **グロサリー用語の紐付け** — 組織共通の用語と関連付け
-3. **メタデータフォームの添付** — 要件に応じてデータオーナー、更新頻度、個人情報区分等を構造化
-4. **パブリッシュ** — ドメイン全体のユーザーが検索・発見可能に
+| レベル | フィールド | 説明 |
+|--------|-----------|------|
+| アセット | Business Name（ビジネス名） | テクニカル名とは別に設定する表示名。検索結果に直接表示される |
+| アセット | Description (summary) | アセットの説明文（自由記述） |
+| アセット | README | Markdown形式の詳細ドキュメント |
+| アセット | グロサリー用語 | ビジネス用語の紐付け |
+| アセット | メタデータフォーム | カスタム属性（キー・バリュー） |
+| カラム | Business Name（ビジネス名） | カラムのテクニカル名とは別の表示名 |
+| カラム | Description | カラムの説明文 |
+| カラム | README | カラムレベルのMarkdownドキュメント |
+| カラム | グロサリー用語 | カラムへのビジネス用語の紐付け |
+| カラム | メタデータフォーム | カラムへのカスタム属性 |
+
+ビジネスコンテキストを付与したあとに、**パブリッシュ**することで Unified Studio ドメイン全体のユーザーが当該アセットを Data Agent 経由で検索・発見可能になります。
 
 ## UI からの確認
 
@@ -284,13 +305,13 @@ CLI でのデータソースラン完了後、SageMaker Unified Studio の UI �
 
 ![SageMaker Unified Studio アセット詳細画面](https://raw.githubusercontent.com/swkky/swkky-zenn-qiita-articles/main/images/sagemaker-unified-studio-asset-detail.jpg)
 
+なお、create-data-source 実行時に--no-publish-on-importを記述しているため、当該アセットは未パブリッシュの状態です。
+画面右上のアセットを公開を押下することでパブリッシュ可能です。  
 アセット詳細画面では以下が確認できます:
 
 - **ビジネスメタデータタブ** — 概要、README、用語集の用語、メタデータフォームの確認・編集
 - **メタデータフォーム「AWS Glue テーブル」** — Glue データカタログ ID、データベース名、場所、リージョン、テーブル ARN 等がデータソースランにより自動設定
 - **右ペイン（アセットの詳細）** — 所有プロジェクト、ドメインユニット、サブスクリプションの承認設定、最終更新者（SYSTEM）、作成日時等
-
-ここから README の作成、用語の追加、メタデータフォームの追加、「アセットを公開」（パブリッシュ）等の次のステップに進めます。
 
 ## 参考
 
