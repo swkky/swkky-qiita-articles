@@ -1,19 +1,16 @@
 ---
 title: SageMaker Unified Studio におけるアセットとは？〜アセットの作成手順
+private: false
 tags:
   - AWS
   - SageMakerUnifiedStudio
   - DataZone
-  - glue
-  - datacatalog
-private: false
+  - Glue
+  - DataCatalog
 updated_at: '2026-08-24T14:55:57+09:00'
 id: 092df5056ee13b7a9297
 organization_url_name: null
 slide: false
-ignorePublish: false
-posting_campaign_uuid: null
-agreed_posting_campaign_term: false
 ---
 
 ## アセットとは?
@@ -297,6 +294,10 @@ aws datazone search \
 | カラム | メタデータフォーム | カラムへのカスタム属性 |
 
 ビジネスコンテキストを付与したあとに、**パブリッシュ**することで Unified Studio ドメイン全体のユーザーが当該アセットを Data Agent 経由で検索・発見可能になります。
+
+## データソースランとビジネスメタデータの関係
+
+ちなみに、データソースランを再実行すると、Glue カタログからテクニカルメタデータ (スキーマ、Glue カタログ側のカラムに対するコメント等) が再取得されますが、DataZone 側で管理されるビジネスメタデータは全てデータソースランの影響を受けません。
 
 ## UI からの確認
 
