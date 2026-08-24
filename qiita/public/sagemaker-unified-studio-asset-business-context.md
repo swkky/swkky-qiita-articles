@@ -1,16 +1,19 @@
 ---
 title: SageMaker Unified Studio のアセットに付与すべきビジネスコンテキストと優先度
-private: false
 tags:
   - AWS
   - SageMakerUnifiedStudio
   - DataZone
   - DataAgent
-  - DataCatalog
-updated_at: '2026-08-24T19:12:02+09:00'
+  - datacatalog
+private: false
+updated_at: '2026-08-24T19:15:15+09:00'
 id: 9bbb5a7251b3a8adf063
 organization_url_name: null
 slide: false
+ignorePublish: false
+posting_campaign_uuid: null
+agreed_posting_campaign_term: false
 ---
 
 ## はじめに
