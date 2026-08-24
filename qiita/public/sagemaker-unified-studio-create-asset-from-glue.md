@@ -1,19 +1,16 @@
 ---
 title: SageMaker Unified Studio におけるアセットとは？〜アセットの作成手順
+private: false
 tags:
   - AWS
   - SageMakerUnifiedStudio
   - DataZone
-  - glue
-  - datacatalog
-private: false
+  - Glue
+  - DataCatalog
 updated_at: '2026-08-24T14:45:05+09:00'
 id: 092df5056ee13b7a9297
 organization_url_name: null
 slide: false
-ignorePublish: false
-posting_campaign_uuid: null
-agreed_posting_campaign_term: false
 ---
 
 ## アセットとは?
@@ -37,7 +34,7 @@ SageMaker Unified Studio（DataZone V2）では、Glue Data Catalog のテーブ
   - 該当するデータを保有する可能性があるアセットを一覧で提示してくれる。
 
 2. コード生成
-- 2026 年 Q3-Q4 における顧客維持率を計算してください。
+- 「2026 年 Q3-Q4 における顧客維持率を計算してください。」
   - 適切なテーブル(アセット)とカラムを使用して、SQL or PySpark コードを生成してくれる。
 
 
