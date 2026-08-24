@@ -3,7 +3,7 @@ title: "SageMaker Unified Studio のアセットに付与すべきビジネス�
 emoji: "🏷️"
 type: "tech"
 topics: ["AWS", "SageMakerUnifiedStudio", "DataZone", "DataAgent", "DataCatalog"]
-published: false
+published: true
 ---
 
 ## はじめに
