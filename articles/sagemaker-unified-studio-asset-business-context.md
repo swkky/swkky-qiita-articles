@@ -48,7 +48,7 @@ SageMaker Unified Studio（DataZone V2）では、Glue テーブルを「アセ�
 | カラム | グロサリー用語 | カラムへのビジネス用語の紐付け |
 | カラム | メタデータフォーム | カラムへのカスタム属性 |
 
-Data Agent は上記すべてを参照対象としています。
+Data Agent は上記すべてを参照対象としているはず。。。
 
 > When your domain has a configured SageMaker Catalog with published assets, the Data Agent uses **glossary terms, custom metadata forms, summaries, and README content** to find the correct tables for your queries.
 > — [Using Business Context with the SageMaker Data Agent](https://docs.aws.amazon.com/sagemaker-unified-studio/latest/userguide/data-agent-business-catalog.html)
@@ -59,9 +59,9 @@ Data Agent は上記すべてを参照対象としています。
 
 ### 1位: カラムの Description
 
-Agent がデータ探索、およびSQL、スクリプト生成の両方で「どのテーブルに目当てデータがありそうか」、「どのカラムが該当しそうか」を判断するための情報として重要そう。
+Agent によるデータ探索、およびSQL、スクリプト生成の両方で「どのテーブルに目当てデータがありそうか」、「どのカラムが該当しそうか」といった判断するための情報として重要そう。
 
-公式ブログでも他のフィールドには触れず、このフィールドを記載しています。
+公式ブログでもこのフィールドを SQL 生成のクオリティに影響する要素として記載している。
 
 > Table descriptions and **column-level business metadata** improve the quality of generated SQL.
 > — [Accelerate SQL development with SageMaker Data Agent in Query Editor](https://aws.amazon.com/blogs/big-data/accelerate-sql-development-with-sagemaker-data-agent-in-query-editor/)
