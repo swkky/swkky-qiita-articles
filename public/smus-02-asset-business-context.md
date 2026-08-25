@@ -20,7 +20,9 @@ agreed_posting_campaign_term: false
 
 SageMaker Unified Studio（DataZone V2）では、Glue テーブルを「アセット」としてカタログに登録し、ビジネスコンテキスト（メタデータ）を付与できます。
 
-アセットの概要や作成手順については[別の記事](https://zenn.dev/swkky/articles/sagemaker-unified-studio-create-asset-from-glue)で解説しているので、そちらを参照してください。
+アセットの概要や作成手順については前の記事で解説しているので、そちらを参照してください。
+
+👉 [SageMaker Unified Studio におけるアセットとは？〜アセットの作成手順](https://qiita.com/swkky/items/092df5056ee13b7a9297)
 
 本記事では、**アセットに付与可能なビジネスコンテキストの全体像**と、特に **Data Agent 活用の観点でどこから手をつけるべきか**を整理します。
 
@@ -154,6 +156,12 @@ Markdown 形式で詳細なドキュメントを書ける場所。
 | 4 | グロサリー用語 | 自然言語→テーブル変換の中核。用語設計が必要 |
 | 5 | README | 詳細ドキュメント。コスト高だが Agent も参照する |
 | 6 | メタデータフォーム | ガバナンス兼用。優先度は低いが参照はされる |
+
+## 次の記事
+
+次の記事では AWS CLI を使ってアセットにメタデータを付与する方法を解説しています。
+
+👉 [SageMaker Unified Studio アセットにビジネスメタデータをAWS CLIから付与する](https://qiita.com/swkky/items/d84b98fceff972c14fa4)
 
 ## 参考
 
