@@ -1,16 +1,19 @@
 ---
 title: SageMaker Unified Studio アセットにビジネスメタデータをAWS CLIから付与する
-private: false
 tags:
   - AWS
   - SageMakerUnifiedStudio
   - DataZone
-  - DataCatalog
-  - AWSCLI
-updated_at: '2026-08-25T00:47:18.936Z'
-id: null
+  - datacatalog
+  - awscli
+private: false
+updated_at: '2026-08-25T09:47:27+09:00'
+id: d84b98fceff972c14fa4
 organization_url_name: null
 slide: false
+ignorePublish: false
+posting_campaign_uuid: null
+agreed_posting_campaign_term: false
 ---
 
 ## はじめに
