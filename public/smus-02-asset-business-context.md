@@ -20,9 +20,7 @@ agreed_posting_campaign_term: false
 
 SageMaker Unified Studio（DataZone V2）では、Glue テーブルを「アセット」としてカタログに登録し、ビジネスコンテキスト（メタデータ）を付与できます。
 
-アセットの概要や作成手順については前の記事で解説しているので、そちらを参照してください。
-
-👉 [SageMaker Unified Studio におけるアセットとは？〜アセットの作成手順](https://qiita.com/swkky/items/092df5056ee13b7a9297)
+アセットの概要や作成手順については[前の記事](https://qiita.com/swkky/items/092df5056ee13b7a9297)で解説しているので、そちらを参照してください。
 
 本記事では、**アセットに付与可能なビジネスコンテキストの全体像**と、特に **Data Agent 活用の観点でどこから手をつけるべきか**を整理します。
 
