@@ -7,7 +7,7 @@ tags:
   - datacatalog
   - awscli
 private: false
-updated_at: ''
+updated_at: '2026-08-25T10:52:32+09:00'
 id: d84b98fceff972c14fa4
 organization_url_name: null
 slide: false

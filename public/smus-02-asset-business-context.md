@@ -7,7 +7,7 @@ tags:
   - DataAgent
   - datacatalog
 private: false
-updated_at: ''
+updated_at: '2026-08-25T10:35:56+09:00'
 id: 9bbb5a7251b3a8adf063
 organization_url_name: null
 slide: false
