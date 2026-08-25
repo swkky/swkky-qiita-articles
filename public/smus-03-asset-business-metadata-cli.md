@@ -108,7 +108,7 @@ aws datazone get-asset \
   --region ap-northeast-1
 ```
 
-<!-- #### jq を使ったワンライナー自動化
+#### jq を使ったワンライナー自動化
 
 ```bash
 # ステップ1: GlueTableForm の content を変数に格納
@@ -140,7 +140,7 @@ aws datazone create-asset-revision \
   ]')" \
   --type-revision "24" \
   --region ap-northeast-1
-``` -->
+```
 
 ### 実行コマンド例
 
