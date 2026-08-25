@@ -73,13 +73,25 @@ SageMaker Unified StudioのカタログはDataZone V2で構築されており、
 - メタデータフォーム（`--forms-input` のカスタムフォーム）
 - カラムの Business Name / Description / Glossary Terms（`--forms-input` の `ColumnBusinessMetadataForm`）
 
-### 重要: GlueTableForm を必ず含める
+### 重要: 既存のフォームを全て含める
 
-`--forms-input` を指定する場合、既存の `GlueTableForm` を必ず含めないと以下のエラーになります:
+`--forms-input` を指定する場合、ビジネスメタデータ系フォームだけでなく**既存のフォームも全て含める**必要があります。含めないとアセットが壊れます:
 
-```
-ValidationException: $.GlueTableForm: is missing but it is required
-```
+| フォーム | 欠落時の影響 |
+|---------|-------------|
+| `GlueTableForm` | `ValidationException` でコマンド自体が失敗 |
+| `DataSourceReferenceForm` | アセットが **Unmanaged** 状態になりサブスクリプション不可 |
+| `SubscriptionTermsForm` | サブスクリプション設定が消失 |
+
+これらはデータソースランやパブリッシュ時に自動設定されるフォームです:
+
+- **`GlueTableForm`**: Glueテーブルの技術情報（カタログID、データベース名、カラム定義、データ型、S3ロケーション等）。UIのSCHEMAタブのカラム一覧はここから表示される
+- **`DataSourceReferenceForm`**: アセットとデータソースの紐づけ情報（データソースID、ランID等）
+- **`SubscriptionTermsForm`**: サブスクリプション時の承認要否設定
+
+:::note warn
+`--forms-input` は「指定したフォームで上書き」する動作です。既存フォームを省略するとそのフォームが削除されます。必ず `get-asset` で現在のフォームを全て取得し、変更したいフォームだけ内容を書き換えて全フォームを含めてください。
+:::
 
 #### 既存の GlueTableForm の取得方法
 
