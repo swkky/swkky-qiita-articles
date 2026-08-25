@@ -7,7 +7,7 @@ tags:
   - iceberg
   - lakeformation
 private: false
-updated_at: '2026-08-20T17:14:38+09:00'
+updated_at: ''
 id: 4b4a0df5158153233a22
 organization_url_name: null
 slide: false
