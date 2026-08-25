@@ -34,7 +34,7 @@ SageMaker Unified StudioのカタログはDataZone V2で構築されており、
 
 ## 対応表: ビジネスコンテキストとCLIコマンド
 
-9.10. のカラムに対する README、メタデータフォームのみ batch-put-attributes-metadata での付与になります。  
+#9〜#10 のカラムに対する README、メタデータフォームのみ batch-put-attributes-metadata での付与になります。  
 それ以外は create-asset-revision で付与可能です
 
 | # | ビジネスコンテキスト | レベル | 使用API |
