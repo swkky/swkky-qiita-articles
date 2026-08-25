@@ -1,13 +1,13 @@
 {
-  "name": "swkky-zenn-qiita-articles",
+  "name": "swkky-qiita-articles",
   "private": true,
-  "description": "ZennとQiitaの技術記事を一括管理するリポジトリ",
+  "description": "Qiitaの技術記事を管理するリポジトリ",
   "scripts": {
-    "new": "npx zenn new:article",
-    "preview": "npx zenn preview --open",
-    "list": "npx zenn list:articles"
+    "new": "npx qiita new",
+    "preview": "npx qiita preview",
+    "publish": "npx qiita publish --all"
   },
   "devDependencies": {
-    "zenn-cli": "^0.1.157"
+    "@qiita/qiita-cli": "^1.6.0"
   }
 }

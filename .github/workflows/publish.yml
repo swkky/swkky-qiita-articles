@@ -1,9 +1,11 @@
-name: Publish articles
+name: Publish to Qiita
 
 on:
   push:
     branches:
       - main
+    paths:
+      - "public/**"
   workflow_dispatch:
 
 permissions:
@@ -14,16 +16,22 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  publish_articles:
+  publish:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Run zenn-qiita-sync
-        uses: C-Naoki/zenn-qiita-sync@main
+      - uses: actions/setup-node@v4
         with:
-          qiita-token: ${{ secrets.QIITA_TOKEN }}
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Publish to Qiita
+        run: npx qiita publish --all
+        env:
+          QIITA_TOKEN: ${{ secrets.QIITA_TOKEN }}

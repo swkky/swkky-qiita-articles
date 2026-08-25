@@ -1,14 +1,13 @@
-# swkky-zenn-qiita-articles
+# swkky-qiita-articles
 
-ZennとQiitaの技術記事を1つのリポジトリで一括管理するリポジトリ。
+Qiitaの技術記事を管理するリポジトリ。
 
-1つのMarkdownを書いて `git push` するだけで、ZennとQiita両方に自動投稿されます。
+`public/` に記事を書いて `git push` するだけで Qiita に自動投稿されます。
 
 ## 仕組み
 
-- `articles/` にZenn形式のMarkdownで記事を書く
-- `git push` すると GitHub Actions（[zenn-qiita-sync](https://github.com/C-Naoki/zenn-qiita-sync)）が自動でQiita形式に変換して投稿
-- Zenn側はGitHub連携で自動反映
+- `public/` に Qiita CLI 形式の Markdown で記事を書く
+- `git push` すると GitHub Actions が `qiita publish --all` を実行して Qiita に投稿・更新
 
 ## セットアップ
 
@@ -18,11 +17,7 @@ ZennとQiitaの技術記事を1つのリポジトリで一括管理するリポ�
 npm install
 ```
 
-### 2. Zenn との連携
-
-[Zenn のダッシュボード](https://zenn.dev/dashboard/deploys) からこのリポジトリを連携する。
-
-### 3. Qiita との連携
+### 2. Qiita との連携
 
 1. [Qiita のトークン発行画面](https://qiita.com/settings/tokens/new) で `read_qiita` と `write_qiita` 権限付きのトークンを発行
 2. GitHub リポジトリの Settings > Secrets and variables > Actions > **Repository secrets** に `QIITA_TOKEN` として登録
@@ -34,8 +29,10 @@ npm install
 ### 新しい記事を作成
 
 ```bash
-npm run new -- --slug my-article-slug --title "記事タイトル"
+npm run new
 ```
+
+`public/` に新しい記事ファイルが生成されます。
 
 ### プレビュー（ローカル確認）
 
@@ -43,49 +40,27 @@ npm run new -- --slug my-article-slug --title "記事タイトル"
 npm run preview
 ```
 
-ブラウザが自動で開き、Zenn形式のプレビューが確認できます。
-
 ### 記事を公開
 
-記事の front matter で `published: true` にして `git push` するだけ。
+記事の front matter で `private: false` にして `git push` するだけ。
 
-### push時の注意
-
-GitHub Actions が Qiita 形式のファイルを自動生成してコミットするため、次回 push 前に pull が必要になります。以下のエイリアスを設定しておくと便利です：
+### 手動で一括投稿
 
 ```bash
-git config --local alias.pp '!git pull --rebase && git push'
+npm run publish
 ```
 
-以降は `git pp` で pull & push を一度に実行できます。
+## 記事の削除
 
-## 記事の非公開・削除
-
-### 非公開にしたい場合
-
-1. front matter を `published: false` にして `git push`
-2. **Zenn** → 自動で非公開になる
-3. **Qiita** → 変化なし。[マイページ](https://qiita.com/mine)から手動で削除してください
-
-### 削除したい場合
-
-1. **Zenn** → [ダッシュボード](https://zenn.dev/dashboard)から手動で削除。その後リポジトリからもファイルを削除してpush（ファイルが残っていると次回デプロイで復活する）
-2. **Qiita** → [マイページ](https://qiita.com/mine)から手動で削除
-
-### プラットフォームの制約
-
-- **Qiita**: 一度全体公開した記事を限定共有（非公開）に戻すことはできません（[公式ヘルプ](https://help.qiita.com/ja/articles/qiita-post)）
-- **Zenn**: GitHub連携でリポジトリからファイルを削除しても記事は削除されません。削除はダッシュボードからのみ可能です（[公式ドキュメント](https://zenn.dev/zenn/articles/connect-to-github#コンテンツの削除)）
+Qiita CLI はリポジトリからファイルを削除しても Qiita 上の記事は削除されません。  
+[マイページ](https://qiita.com/mine)から手動で削除してください。
 
 ## ディレクトリ構成
 
 ```
 .
-├── .github/workflows/publish.yml  # Qiita自動投稿用のGitHub Actions
-├── articles/                      # ★ 記事を書く場所（Zenn形式Markdown）
-├── books/                         # Zennの本（任意）
-├── images/                        # 記事で使う画像
-├── qiita/public/                  # 自動生成（Qiita形式、手動編集不要）
+├── .github/workflows/publish.yml  # Qiita 自動投稿用 GitHub Actions
+├── public/                        # ★ 記事を書く場所（Qiita CLI 形式）
 └── package.json
 ```
 
@@ -94,10 +69,15 @@ git config --local alias.pp '!git pull --rebase && git push'
 ```yaml
 ---
 title: "記事タイトル"
-emoji: "🐙"
-type: "tech"  # tech or idea
-topics: ["GitHub", "Zenn", "Qiita"]
-published: true  # trueにするとZenn・Qiita両方に公開
+tags:
+  - AWS
+  - Terraform
+private: false
+updated_at: ""
+id: null
+organization_url_name: null
+slide: false
+ignorePublish: false
 ---
 
 ここから本文を書く...
