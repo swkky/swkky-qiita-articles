@@ -7,7 +7,7 @@ tags:
   - ZeroETL
   - datacatalog
 private: false
-updated_at: '2026-08-25T16:58:13+09:00'
+updated_at: '2026-08-25T17:01:01+09:00'
 id: 371f056f6846175bcbf7
 organization_url_name: null
 slide: false
