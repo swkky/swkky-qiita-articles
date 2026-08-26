@@ -35,7 +35,7 @@ SageMaker Unified StudioのカタログはDataZone V2で構築されており、
 ## 対応表: ビジネスコンテキストとCLIコマンド
 
 #9〜#10 のカラムに対する README、メタデータフォームのみ batch-put-attributes-metadata での付与になります。  
-それ以外は create-asset-revision で付与可能です
+それ以外は create-asset-revision で付与可能です。
 
 | # | ビジネスコンテキスト | レベル | 使用API |
 |---|---------------------|--------|---------|
@@ -76,7 +76,7 @@ SageMaker Unified StudioのカタログはDataZone V2で構築されており、
 - メタデータフォーム（`--forms-input` のカスタムフォーム）
 - カラムの Business Name / Description / Glossary Terms（`--forms-input` の `ColumnBusinessMetadataForm`）
 
-### 重要: 既存のフォームを全て含める
+### 注意点1: 既存のフォームを全て含める
 
 `--forms-input` を指定する場合、ビジネスメタデータ系フォームだけでなく**既存のフォームも全て含める**必要があります。含めないとアセットが壊れます:
 
@@ -93,7 +93,7 @@ SageMaker Unified StudioのカタログはDataZone V2で構築されており、
 - **`SubscriptionTermsForm`**: サブスクリプション時の承認要否設定
 
 :::note warn
-`--forms-input` は「指定したフォームで上書き」する動作です。既存フォームを省略するとそのフォームが削除されます。必ず `get-asset` で現在のフォームを全て取得し、変更したいフォームだけ内容を書き換えて全フォームを含めてください。
+`--forms-input` は「指定したフォームで上書き」する動作です。既存フォームを省略するとそのフォームが削除されます。   `get-asset` で現在のフォームを全て取得し、変更したいフォームだけ内容を書き換えて全フォームを含める必要があります。
 :::
 
 #### 既存の GlueTableForm の取得方法
@@ -141,6 +141,41 @@ aws datazone create-asset-revision \
   --type-revision "24" \
   --region ap-northeast-1
 ``` -->
+
+### 注意点2: typeRevision の指定について
+
+`--forms-input` の各フォームには `typeRevision` を指定する必要があります。これはフォーム定義のバージョン番号であり、**フォーム定義が更新されるたびにインクリメント**されます。
+
+| フォーム | typeRevision の特徴 |
+|---------|-------------------|
+| `GlueTableForm` 等のシステムフォーム | DataZone 側のアップデートで自動的に上がる |
+| カスタムメタデータフォーム | フォーム定義を変更した際に上がる |
+
+間違ったリビジョンを指定すると `ValidationException`（スキーマ不一致）が発生します。例えば、フォーム定義の Revision 1 と 2 でフィールド名が変わっている場合、古いリビジョンのフィールド名で送信するとエラーになります。
+
+**最新リビジョンの取得方法:**
+
+```bash
+# システムフォーム（GlueTableForm等）: get-asset の formsOutput から確認
+aws datazone get-asset \
+  --domain-identifier dzd-xxxxxxxxxxxxx \
+  --identifier xxxxxxxxxxxx \
+  --query "formsOutput[].{formName:formName,typeName:typeName,typeRevision:typeRevision}" \
+  --output table \
+  --region ap-northeast-1
+
+# カスタムフォーム: get-form-type で最新リビジョンを直接取得
+aws datazone get-form-type \
+  --domain-identifier dzd-xxxxxxxxxxxxx \
+  --form-type-identifier MyCustomMetadataForm \
+  --query "revision" \
+  --output text \
+  --region ap-northeast-1
+```
+
+:::note
+メタデータが付与されていない状態での実行はいいのですが、既存のメタデータが付与されている 2 回目以降、このあたりを考慮して実行するのは〜かなり面倒なので、スクリプトを組んで、`get-asset`で既存フォーム、`get-form-type` で最新リビジョンを動的に取得して付与するのが良さそうです。
+:::
 
 ### 実行コマンド例
 
