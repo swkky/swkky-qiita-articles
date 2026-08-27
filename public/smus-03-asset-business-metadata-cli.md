@@ -20,7 +20,7 @@ agreed_posting_campaign_term: false
 
 :::note info
 本記事は以下のシリーズ記事の続編です。アセットやビジネスコンテキストの概要についてはそれぞれこちらを参照ください。
-- [SageMaker Unified Studio におけるアセットとは？〜アセットの作成手順](https://qiita.com/swkky/items/092df5056ee13b7a9297)
+- [SageMaker Unified Studio 入門 アセットとは？〜アセットの作成手順](https://qiita.com/swkky/items/092df5056ee13b7a9297)
 - [SageMaker Unified Studio のアセットに付与すべきビジネスコンテキストと優先度](https://qiita.com/swkky/items/9bbb5a7251b3a8adf063)
 :::
 
