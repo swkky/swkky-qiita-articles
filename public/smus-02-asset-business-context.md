@@ -1,5 +1,5 @@
 ---
-title: SageMaker Unified Studio のアセットに付与すべきビジネスコンテキストと優先度
+title: Data Agent 活用の観点で SageMaker Unified Studio のアセットに付与すべきビジネスコンテキストと優先度
 tags:
   - AWS
   - SageMakerUnifiedStudio
