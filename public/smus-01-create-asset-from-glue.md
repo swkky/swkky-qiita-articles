@@ -16,6 +16,32 @@ posting_campaign_uuid: null
 agreed_posting_campaign_term: false
 ---
 
+## はじめに
+
+本記事は、SageMaker Unified Studio（旧 DataZone）を使ったデータカタログ構築の入門記事です。そもそも「アセット」とは何か、なぜ必要なのかといった概念の整理から始め、最終的に **AWS CLI を使って Glue テーブルからアセットを作成する** ところまでを記載します。
+
+「Unified Studio を触り始めたけれど、アセットという言葉が出てきてもピンとこない」「Glue テーブルを Unified Studio のカタログに登録したいが、どういう仕組みで、どんな準備が必要なのか分からない」といった方に向けた内容です。
+
+### この記事で解説すること
+
+- アセットとは何か（Glue テーブルとの関係、ビジネスコンテキストの役割）
+- ドメイン・プロジェクト・アセットの関係性、パブリッシュとサブスクリプションの仕組み
+- なぜアセットが必要なのか（データコラボレーション / データガバナンス / Data Agent 活用）
+- Lake Formation 権限などの前提条件
+- AWS CLI を使って Glue テーブルからアセットを作成する具体的な手順（データソース作成 → データソースラン実行 → アセット確認）
+
+### 想定読者
+
+- SageMaker Unified Studio（DataZone）を使い始めた、あるいはこれから使う予定のデータエンジニア・データ基盤担当者
+- Glue Data Catalog のテーブルを Unified Studio のカタログで管理・共有したい方
+- アセット・ドメイン・プロジェクトといった概念を整理したい方
+
+### 前提知識
+
+- AWS の基本的な操作（IAM、AWS CLI）
+- Glue Data Catalog（データベース / テーブル）の基礎知識
+- Lake Formation の概要（権限管理の考え方）を知っていると理解がスムーズです
+
 ## アセットとは?
 
 SageMaker Unified Studio（DataZone）における「[アセット](https://docs.aws.amazon.com/ja_jp/datazone/latest/userguide/datazone-concepts.html#datazone-terms)」とは、テーブルやビューなどの**データオブジェクトに対応するカタログ上の管理単位**です。
