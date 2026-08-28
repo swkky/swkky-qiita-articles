@@ -1,5 +1,5 @@
 ---
-title: SageMaker Unified Studio 入門 〜アセットってなに？ どうやって作成するの？〜
+title: 【SageMaker Unified Studio 入門】「アセットって結局なに？」を図解で理解して、Glue テーブルから作ってみる【AWS CLI】
 tags:
   - AWS
   - SageMakerUnifiedStudio
