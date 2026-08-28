@@ -1,5 +1,5 @@
 ---
-title: SageMaker Unified Studio 入門 アセットとは？〜アセットの作成手順
+title: SageMaker Unified Studio 入門 〜アセットってなに？ どうやって作成するの？〜
 tags:
   - AWS
   - SageMakerUnifiedStudio
@@ -201,6 +201,10 @@ graph TB
 なお、現時点で SageMaker Data Agent は Unified Studio 内のノートブック、クエリエディタからのみ利用可能です。
 
 本記事では、AWS CLI を使って **Glue テーブルに対するデータソースを作成し、データソースランを実行してアセットを生成する**までの手順を解説します。
+
+## アセットの作成方法
+
+長くなりましたが、いよいよここから Glue テーブルに対するアセットの作成方法についてです。
 
 ## 前提条件
 
