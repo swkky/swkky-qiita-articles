@@ -18,17 +18,11 @@ agreed_posting_campaign_term: false
 
 ## はじめに
 
-SageMaker Unified Studio（DataZone V2）のグロサリー（ビジネス用語集）と用語は UI からも作れますが、**多数の用語を一括登録したい**場合や、**環境を再現可能（Infrastructure as Code 的）にしたい**場合は AWS CLI（`aws datazone`）が便利です。
-
 本記事では、AWS CLI でグロサリーと用語を作成し、アセットに付与するまでの手順を扱います。
+アセット、グロサリーについては、それぞれ以下の記事でまとめています。
 
-グロサリーの概念（2段階層・名前空間としての性質・定義方針）については、先に以下の記事を読むと理解が深まります。
-
-<!-- - [【データガバナンス入門】SageMaker Unified Studio のグロサリー（ビジネス用語集）を具体例で理解する](https://qiita.com/swkky/items/xxxxxxxxxxxx)（※公開後にリンク差し替え） -->
-
-:::note
-本記事のコマンド・オプションは AWS CLI（`datazone`）の公式リファレンスに基づいています。仕様は変わる可能性があるため、最新は[公式リファレンス](https://docs.aws.amazon.com/cli/latest/reference/datazone/index.html)を確認してください。
-:::
+- [アセット](https://qiita.com/swkky/items/092df5056ee13b7a9297)
+- [グロサリー](https://qiita.com/swkky/items/8259ea1f71ab6c8d6be5)
 
 ## 前提
 

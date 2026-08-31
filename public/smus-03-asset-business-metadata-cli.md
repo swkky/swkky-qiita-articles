@@ -20,13 +20,13 @@ agreed_posting_campaign_term: false
 
 :::note info
 本記事は以下のシリーズ記事の続編です。アセットやビジネスコンテキストの概要についてはそれぞれこちらを参照ください。
-- [【SageMaker Unified Studio 入門】「アセットってなに？」を図解で理解して、Glue テーブルから作ってみる【AWS CLI】](https://qiita.com/swkky/items/092df5056ee13b7a9297)
-- [Data Agent 活用の観点で SageMaker Unified Studio のアセットに付与すべきビジネスコンテキストと優先度](https://qiita.com/swkky/items/9bbb5a7251b3a8adf063)
+- [アセットとは？](https://qiita.com/swkky/items/092df5056ee13b7a9297)
+- [アセットに付与すべきビジネスコンテキスト](https://qiita.com/swkky/items/9bbb5a7251b3a8adf063)
 :::
 
 SageMaker Unified Studio（DataZone V2）のアセットには、Business Name・Description・README・グロサリー用語・メタデータフォームといったビジネスコンテキストを UI から付与できます。
 
-しかし、アセットが数百〜数千ある環境では手作業での付与は現実的ではないため、本記事ではAWS CLI（`aws datazone`）を使って**アセットレベル・カラムレベルのビジネスコンテキストを付与する方法**を解説します。
+しかし、メタデータを付与する必要があるアセットが大量にある環境では手作業での付与は現実的ではないため、本記事ではAWS CLI（`aws datazone`）を使って**アセットレベル・カラムレベルのビジネスコンテキストを付与する方法**を解説します。  
 
 :::note
 SageMaker Unified StudioのカタログはDataZone V2で構築されており、CLIは `aws datazone` を使用します。

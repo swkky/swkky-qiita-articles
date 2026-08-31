@@ -1,5 +1,5 @@
 ---
-title: 【SageMaker Unified Studio 入門】「アセットってなに？」を図解で理解して、Glue テーブルから作ってみる【AWS CLI】
+title: 【SageMaker Unified Studio 入門】「アセットってなに？」を理解して、AWS CLI から作成してみる
 tags:
   - AWS
   - SageMakerUnifiedStudio
@@ -18,7 +18,7 @@ agreed_posting_campaign_term: false
 
 ## はじめに
 
-本記事は、SageMaker Unified Studio（旧 DataZone）を使ったデータカタログ構築の入門記事です。そもそも「アセット」とは何か、なぜ必要なのかといった概念の整理から始め、最終的に **AWS CLI を使って Glue テーブルからアセットを作成する** ところまでを記載します。
+本記事は、SageMaker Unified Studio を使ったデータカタログ構築の入門記事です。そもそも「アセット」とは何か、なぜ必要なのかといった概念の整理から始め、最終的に **AWS CLI を使って Glue テーブルからアセットを作成する** ところまでを記載します。
 
 「Unified Studio を触り始めたけれど、アセットという言葉が出てきてもピンとこない」「Glue テーブルを Unified Studio のカタログに登録したいが、どういう仕組みで、どんな準備が必要なのか分からない」といった方に向けた内容です。
 
