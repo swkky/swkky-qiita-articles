@@ -171,7 +171,7 @@ Markdown 形式で詳細なドキュメントを書ける場所。
 
 次の記事では AWS CLI を使って実際にアセットにビジネスメタデータを付与する方法を解説しています。
 
-👉 [SageMaker Unified Studio アセットにビジネスメタデータをAWS CLIから付与する](https://qiita.com/swkky/items/d84b98fceff972c14fa4)<!--ref:asset-business-metadata-cli--><!--/ref-->
+👉 [SageMaker Unified Studio アセットにビジネスメタデータをAWS CLIから付与する](https://qiita.com/swkky/items/d84b98fceff972c14fa4)
 
 ## 参考
 
