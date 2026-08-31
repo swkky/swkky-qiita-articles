@@ -7,7 +7,7 @@ tags:
   - glue
   - datacatalog
 private: false
-updated_at: '2026-08-31T16:48:25+09:00'
+updated_at: '2026-08-31T16:57:27+09:00'
 id: 092df5056ee13b7a9297
 organization_url_name: null
 slide: false
