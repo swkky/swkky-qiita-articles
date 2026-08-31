@@ -7,7 +7,7 @@ tags:
   - datacatalog
   - データガバナンス
 private: false
-updated_at: '2026-08-31T16:57:26+09:00'
+updated_at: '2026-08-31T17:25:24+09:00'
 id: 209cf9dd6c33b6c6f444
 organization_url_name: null
 slide: false
