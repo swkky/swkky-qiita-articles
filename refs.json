@@ -1,0 +1,14 @@
+{
+  "asset-from-glue": {
+    "file": "smus-01-create-asset-from-glue.md",
+    "id": "092df5056ee13b7a9297"
+  },
+  "asset-business-context": {
+    "file": "smus-02-asset-business-context.md",
+    "id": "9bbb5a7251b3a8adf063"
+  },
+  "asset-business-metadata-cli": {
+    "file": "smus-03-asset-business-metadata-cli.md",
+    "id": "d84b98fceff972c14fa4"
+  }
+}

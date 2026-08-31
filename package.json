@@ -5,6 +5,7 @@
   "scripts": {
     "new": "npx qiita new",
     "preview": "npx qiita preview",
+    "refs": "node scripts/update-refs.mjs",
     "publish": "npx qiita publish --all"
   },
   "devDependencies": {

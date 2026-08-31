@@ -11,24 +11,21 @@ updated_at: ''
 id: null
 organization_url_name: null
 slide: false
-ignorePublish: true
+ignorePublish: false
 posting_campaign_uuid: null
 agreed_posting_campaign_term: false
 ---
 
 ## はじめに
 
-SageMaker Unified Studio（DataZone V2）のグロサリー（ビジネス用語集）と用語は UI からも作れますが、**多数の用語を一括登録したい**場合や、**環境を再現可能（Infrastructure as Code 的）にしたい**場合は AWS CLI（`aws datazone`）が便利です。
-
 本記事では、AWS CLI でグロサリーと用語を作成し、アセットに付与するまでの手順を扱います。
+グロサリーの概念については、以下の記事にまとめています。
 
-グロサリーの概念（2段階層・名前空間としての性質・定義方針）については、先に以下の記事を読むと理解が深まります。
+- [SageMaker Unified Studio「グロサリー（ビジネス用語集）ってなに？」](https://qiita.com/swkky/items/209cf9dd6c33b6c6f444)
 
-<!-- - [【データガバナンス入門】SageMaker Unified Studio のグロサリー（ビジネス用語集）を具体例で理解する](https://qiita.com/swkky/items/xxxxxxxxxxxx)（※公開後にリンク差し替え） -->
+アセットについては、以下の記事にまとめています。
 
-:::note
-本記事のコマンド・オプションは AWS CLI（`datazone`）の公式リファレンスに基づいています。仕様は変わる可能性があるため、最新は[公式リファレンス](https://docs.aws.amazon.com/cli/latest/reference/datazone/index.html)を確認してください。
-:::
+- <!--ref:asset-from-glue-->[SageMaker Unified Studio 「アセットってなに？」](https://qiita.com/swkky/items/092df5056ee13b7a9297)<!--/ref-->
 
 ## 前提
 
@@ -77,7 +74,7 @@ aws datazone create-glossary \
 | `--owning-project-identifier` | ○ | 所有プロジェクトID（このプロジェクトのメンバーだけが編集可） |
 | `--name` | ○ | 用語集の名前（最大256文字） |
 | `--description` | | 用語集の説明（最大4096文字） |
-| `--status` | | `ENABLED` / `DISABLED`（**省略時は無効**なので、使うなら明示的に `ENABLED`） |
+| `--status` | | `ENABLED` / `DISABLED`（**省略時は `ENABLED`**。無効にしたい場合のみ `DISABLED` を指定） |
 | `--usage-restrictions` | | `ASSET_GOVERNED_TERMS` を指定すると**制限付きグロサリー**になる |
 
 レスポンス例（抜粋）:
@@ -183,7 +180,7 @@ aws datazone create-asset-revision \
 
 AWS CLI でグロサリー・用語を作成する手順を整理しました。
 
-- **① `create-glossary`** で用語集を作る。`--description` に対象範囲を書き、`--status ENABLED` を明示するのがポイント。レスポンスの `id` がグロサリーID。
+- **① `create-glossary`** で用語集を作る。`--description` に対象範囲を書く。`--status` は省略時 `ENABLED`（無効にしたい場合のみ `DISABLED`）。レスポンスの `id` がグロサリーID。
 - **② `create-glossary-term`** で用語を追加する。定義は `--short-description` / `--long-description` に分けて書く。親子関係は `--term-relations`（`isA` / `classifies`）。多数登録はシェルループが便利。
 - **③ `create-asset-revision --glossary-terms`** でアセットに用語ID配列を付与する。
 - `create-glossary` / `create-glossary-term` は共有ドメインへの変更なので、命名・定義は事前レビュー推奨。

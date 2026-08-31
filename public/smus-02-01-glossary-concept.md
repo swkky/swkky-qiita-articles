@@ -30,7 +30,7 @@ SageMaker Unified Studio（DataZone V2）でアセットを作成し、データ
 
 「そもそもアセットとは？」という方は、先に以下の記事を確認いただくと、よりイメージしやすいと思います。
 
-- [【SageMaker Unified Studio 入門】「アセットってなに？」を理解して、Glue テーブルから作ってみる【AWS CLI】](https://qiita.com/swkky/items/092df5056ee13b7a9297)
+- <!--ref:asset-from-glue-->[SageMaker Unified Studio 「アセットってなに？」](https://qiita.com/swkky/items/092df5056ee13b7a9297)<!--/ref-->
 
 ## グロサリー（ビジネス用語集）とは何か
 
@@ -38,7 +38,7 @@ SageMaker Unified Studio（DataZone V2）でアセットを作成し、データ
 
 > a business glossary is a collection of business terms (words) that may be associated with assets (data). It provides appropriate vocabularies with a list of business terms and their definitions ... to make sure the same definitions are used across the organization when analyzing data.
 
-一言で言うと、**業務で使う用語とその定義を集めた「辞書」**です。SageMaker Unified Studio では、この用語をアセット（テーブル）やカラムに紐付けられます。
+一言で言うと、業務で使う用語とその定義を集めた「辞書」です。SageMaker Unified Studio では、この用語をアセット（テーブル）やカラムに紐付けられます。
 
 グロサリーの具体例を挙げると、例えば、以下のように「財務指標」という 1 つの用語集の中に、複数の用語が紐づいているイメージです。
 
@@ -48,8 +48,6 @@ SageMaker Unified Studio（DataZone V2）でアセットを作成し、データ
 ├─ 解約率（チャーンレート） … 期初契約数に対する期中解約数の割合
 └─ LTV（顧客生涯価値） … 1顧客が契約期間全体でもたらす収益の見込み
 ```
-
-これらの用語を、アセットやカラムに「このテーブルは財務指標の ARR に関するデータ」「この列は解約率」のように付与していきます。
 
 ### なぜグロサリーが必要なのか
 
@@ -118,28 +116,8 @@ graph TB
 
 これにより「各プロジェクトで用語を定義・管理し、ドメイン全体（プロジェクト間）を横断して参照・使用する」という運用ができます。
 
-```mermaid
-graph TB
-    subgraph Domain["🏢 ドメイン（プロジェクト間を横断して参照・使用できる範囲）"]
-        subgraph ProjA["📁 営業プロジェクト"]
-            GA["📖 グロサリー A<br/>（このプロジェクトが定義・管理）"]
-        end
-        subgraph ProjB["📁 サポートプロジェクト"]
-            GB["📖 グロサリー B<br/>（このプロジェクトが定義・管理）"]
-        end
-        subgraph ProjC["📁 分析プロジェクト"]
-            AssetC["🗂️ 自分のアセット"]
-        end
-    end
-
-    GA -->|"作成・編集・削除<br/>（所有プロジェクトのみ）"| GA
-    GB -->|"作成・編集・削除<br/>（所有プロジェクトのみ）"| GB
-    GA -.->|"参照・付与（ドメイン内 全員OK）"| AssetC
-    GB -.->|"参照・付与（ドメイン内 全員OK）"| AssetC
-```
-
 各プロジェクトは**自分が定義した用語を自分で管理**しつつ、**他プロジェクトが定義したもの**もドメイン内なら自由に参照・アセットへ付与できます。  
-ユースケースに応じて「データ基盤の開発チームだけが集中管理する」形にも、「各チームが領域ごとに分担して定義する」形にも対応できる、柔軟な運用が可能です。
+ユースケースに応じて「データ基盤の開発チームが用語を集中管理する」形にも、「各チームがプロジェクトごとに分担して定義する」形にも対応できるため、柔軟な運用が可能です。
 
 ## グロサリーと用語に付けられる情報
 
