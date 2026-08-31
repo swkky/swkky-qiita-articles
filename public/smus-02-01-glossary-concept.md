@@ -30,7 +30,7 @@ SageMaker Unified Studio（DataZone V2）でアセットを作成し、データ
 
 「そもそもアセットとは？」という方は、先に以下の記事を確認いただくと、よりイメージしやすいと思います。
 
-- <!--ref:asset-from-glue-->[SageMaker Unified Studio 「アセットってなに？」](https://qiita.com/swkky/items/092df5056ee13b7a9297)<!--/ref-->
+- [SageMaker Unified Studio 「アセットってなに？」](https://qiita.com/swkky/items/092df5056ee13b7a9297)<!--ref:asset-from-glue--><!--/ref-->
 
 ## グロサリー（ビジネス用語集）とは何か
 

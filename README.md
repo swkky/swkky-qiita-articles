@@ -85,7 +85,7 @@ npm run publish
 `npm run refs` を実行すると、こう展開されます（`[タイトル](URL)` の形）。
 
 ```markdown
-👉 <!--ref:asset-from-glue-->[SageMaker Unified Studio 「アセットってなに？」](https://qiita.com/swkky/items/092df5056ee13b7a9297)<!--/ref-->
+👉 [SageMaker Unified Studio 「アセットってなに？」](https://qiita.com/swkky/items/092df5056ee13b7a9297)<!--ref:asset-from-glue--><!--/ref-->
 ```
 
 **例2: 表示テキストを自分で決める（`|` の後に書く）**
@@ -99,7 +99,7 @@ npm run publish
 `npm run refs` を実行すると、テキストは「前の記事」のまま、URL だけ入ります。
 
 ```markdown
-アセットの概要は <!--ref:asset-from-glue|前の記事-->[前の記事](https://qiita.com/swkky/items/092df5056ee13b7a9297)<!--/ref--> を参照してください。
+アセットの概要は [前の記事](https://qiita.com/swkky/items/092df5056ee13b7a9297)<!--ref:asset-from-glue|前の記事--><!--/ref--> を参照してください。
 ```
 
 **ポイント**

@@ -5,10 +5,12 @@
 //   {{ref:KEY}}            → [対象記事のタイトル](URL) に展開
 //   {{ref:KEY|表示テキスト}} → [表示テキスト](URL) に展開（テキストは維持、URLだけ管理）
 //
-// 一度展開された参照はマーカーコメントで囲まれる:
-//   <!--ref:KEY-->[タイトル](URL)<!--/ref-->
-//   <!--ref:KEY|表示テキスト-->[表示テキスト](URL)<!--/ref-->
-// マーカーは Qiita 上では表示されない。再実行するとマーカー内が最新のタイトル/URLで再生成される。
+// 一度展開された参照はリンクの直後にマーカーコメントが付く:
+//   [タイトル](URL)<!--ref:KEY--><!--/ref-->
+//   [表示テキスト](URL)<!--ref:KEY|表示テキスト--><!--/ref-->
+// マーカーは Qiita 上では表示されない。再実行するとリンク部分が最新のタイトル/URLで再生成される。
+// マーカーをリンクの「後ろ」に置くのは、リスト項目("- ")直後にHTMLコメントが来ると
+// Qiita/CommonMark がHTMLブロック扱いしてリンクを解釈しなくなるため。
 //
 // KEY → id / タイトル取得元ファイルの対応は refs.json で定義する。
 
@@ -59,10 +61,15 @@ function loadRefs() {
   return resolved;
 }
 
-// 表示テキストのエスケープ（マーカーやMarkdownリンクを壊さない最小限）
 function buildLink(ref, label) {
   const text = label != null && label !== "" ? label : ref.title;
   return `[${text}](${ref.url})`;
+}
+
+// 展開後の形式: [タイトル](URL)<!--ref:KEY|label--><!--/ref-->
+function buildMarked(ref, key, label) {
+  const labelPart = label != null && label !== "" ? `|${label}` : "";
+  return `${buildLink(ref, label)}<!--ref:${key}${labelPart}--><!--/ref-->`;
 }
 
 // KEY と 任意ラベルを表す正規表現部品
@@ -72,20 +79,26 @@ const LABEL = "(?:\\|([^}>]*?))?"; // |ラベル は任意
 function expand(content, refs, { file, stats }) {
   let out = content;
 
-  // 1) 既に展開済みのマーカーを最新化: <!--ref:KEY|label-->...<!--/ref-->
+  // 1) 既に展開済みのマーカーを最新化して新形式に統一する。
+  //    旧形式（マーカーが前）: <!--ref:KEY|label-->[text](url)<!--/ref-->
+  //    新形式（マーカーが後）: [text](url)<!--ref:KEY|label--><!--/ref-->
+  //    どちらも捕捉できるようにする（新形式を先に試す）。
   const markerRe = new RegExp(
-    `<!--ref:${KEY}${LABEL}-->[\\s\\S]*?<!--/ref-->`,
+    `\\[[^\\]]*\\]\\([^)]*\\)<!--ref:${KEY}${LABEL}--><!--/ref-->` +
+      "|" +
+      `<!--ref:${KEY}${LABEL}-->[\\s\\S]*?<!--/ref-->`,
     "g"
   );
-  out = out.replace(markerRe, (whole, key, label) => {
+  out = out.replace(markerRe, (whole, k1, l1, k2, l2) => {
+    const key = k1 != null ? k1 : k2;
+    const label = k1 != null ? l1 : l2;
     const ref = refs[key];
     if (!ref) {
       console.warn(`  [WARN] 未定義のref key: ${key} (${file}) — スキップ`);
       return whole;
     }
     stats.updated++;
-    const labelPart = label != null && label !== "" ? `|${label}` : "";
-    return `<!--ref:${key}${labelPart}-->${buildLink(ref, label)}<!--/ref-->`;
+    return buildMarked(ref, key, label);
   });
 
   // 2) 未展開のプレースホルダを展開: {{ref:KEY|label}}
@@ -97,8 +110,7 @@ function expand(content, refs, { file, stats }) {
       return whole;
     }
     stats.expanded++;
-    const labelPart = label != null && label !== "" ? `|${label}` : "";
-    return `<!--ref:${key}${labelPart}-->${buildLink(ref, label)}<!--/ref-->`;
+    return buildMarked(ref, key, label);
   });
 
   return out;

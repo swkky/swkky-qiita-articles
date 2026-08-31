@@ -531,9 +531,9 @@ CLI でのデータソースラン完了後、SageMaker Unified Studio の UI �
 
 別の記事ではアセットに付与できるビジネスコンテキスト、AWS CLIでの付与方法について紹介しています。
 
-👉 <!--ref:asset-business-context-->[Data Agent 活用の観点で SageMaker Unified Studio のアセットに付与すべきビジネスコンテキストと優先度](https://qiita.com/swkky/items/9bbb5a7251b3a8adf063)<!--/ref-->
+👉 [Data Agent 活用の観点で SageMaker Unified Studio のアセットに付与すべきビジネスコンテキストと優先度](https://qiita.com/swkky/items/9bbb5a7251b3a8adf063)<!--ref:asset-business-context--><!--/ref-->
 
-👉 <!--ref:asset-business-metadata-cli-->[SageMaker Unified Studio アセットにビジネスメタデータをAWS CLIから付与する](https://qiita.com/swkky/items/d84b98fceff972c14fa4)<!--/ref-->
+👉 [SageMaker Unified Studio アセットにビジネスメタデータをAWS CLIから付与する](https://qiita.com/swkky/items/d84b98fceff972c14fa4)<!--ref:asset-business-metadata-cli--><!--/ref-->
 
 ## 参考
 

@@ -30,7 +30,7 @@ SageMaker Unified Studio（DataZone V2）でデータカタログを整備して
 グロサリーの概念については、先に以下の記事を読むと理解が深まります（後半でグロサリーと連携するため）。
 
 - [【データガバナンス入門】SageMaker Unified Studio のグロサリー（ビジネス用語集）を具体例で理解する](https://qiita.com/swkky/items/xxxxxxxxxxxx)（※公開後にリンク差し替え）
-- <!--ref:asset-from-glue-->[SageMaker Unified Studio 「アセットってなに？」](https://qiita.com/swkky/items/092df5056ee13b7a9297)<!--/ref-->
+- [SageMaker Unified Studio 「アセットってなに？」](https://qiita.com/swkky/items/092df5056ee13b7a9297)<!--ref:asset-from-glue--><!--/ref-->
 
 :::note
 本記事の仕様は公式ドキュメントに基づいていますが、UI の細部や仕様は変わる可能性があります。設計方針の部分には筆者の見解を含みます。

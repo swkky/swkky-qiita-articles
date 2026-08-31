@@ -25,7 +25,7 @@ agreed_posting_campaign_term: false
 
 アセットについては、以下の記事にまとめています。
 
-- <!--ref:asset-from-glue-->[SageMaker Unified Studio 「アセットってなに？」](https://qiita.com/swkky/items/092df5056ee13b7a9297)<!--/ref-->
+- [SageMaker Unified Studio 「アセットってなに？」](https://qiita.com/swkky/items/092df5056ee13b7a9297)<!--ref:asset-from-glue--><!--/ref-->
 
 ## 前提
 

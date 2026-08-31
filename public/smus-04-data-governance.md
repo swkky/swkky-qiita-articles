@@ -29,8 +29,8 @@ SageMaker Unified Studio（DataZone V2）でデータカタログを整備して
 
 アセットの基本やビジネスコンテキストの付け方は、以下の記事で解説しています。あわせて参照してください。
 
-- <!--ref:asset-from-glue-->[SageMaker Unified Studio 「アセットってなに？」](https://qiita.com/swkky/items/092df5056ee13b7a9297)<!--/ref-->
-- <!--ref:asset-business-context-->[Data Agent 活用の観点で SageMaker Unified Studio のアセットに付与すべきビジネスコンテキストと優先度](https://qiita.com/swkky/items/9bbb5a7251b3a8adf063)<!--/ref-->
+- [SageMaker Unified Studio 「アセットってなに？」](https://qiita.com/swkky/items/092df5056ee13b7a9297)<!--ref:asset-from-glue--><!--/ref-->
+- [Data Agent 活用の観点で SageMaker Unified Studio のアセットに付与すべきビジネスコンテキストと優先度](https://qiita.com/swkky/items/9bbb5a7251b3a8adf063)<!--ref:asset-business-context--><!--/ref-->
 
 :::note
 本記事の仕様は公式ドキュメントおよび実際の API 挙動の確認に基づいていますが、UI の細部や仕様は変わる可能性があります。設計・分類の方針部分には筆者の見解を含みます。
