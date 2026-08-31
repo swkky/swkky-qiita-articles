@@ -18,11 +18,12 @@ agreed_posting_campaign_term: false
 
 ## はじめに
 
+グロサリーとは、SageMaker Unified Studio におけるビジネスメタデータの一種で、アセットに対して付与出来ます。
 本記事では、AWS CLI でグロサリーと用語を作成し、アセットに付与するまでの手順を扱います。
-アセット、グロサリーについては、それぞれ以下の記事でまとめています。
+アセット、グロサリーについては、それぞれ以下の記事でまとめていますので、よろしければご参照ください。
 
-- [アセット](https://qiita.com/swkky/items/092df5056ee13b7a9297)
-- [グロサリー](https://qiita.com/swkky/items/8259ea1f71ab6c8d6be5)
+- [SageMaker Unified Studio 「アセットって何？」](https://qiita.com/swkky/items/092df5056ee13b7a9297)
+- [SageMaker Unified Studio 「グロサリーって何？」](https://qiita.com/swkky/items/8259ea1f71ab6c8d6be5)
 
 ## 前提
 
