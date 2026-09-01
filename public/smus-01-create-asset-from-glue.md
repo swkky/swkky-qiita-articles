@@ -1,5 +1,5 @@
 ---
-title: 【SageMaker Unified Studio 入門】「アセットってなに？」を理解して、AWS CLI から作成してみる
+title: SageMaker Unified Studio におけるデータ活用・ガバナンスの肝「アセット」を深掘りしてみる
 tags:
   - AWS
   - SageMakerUnifiedStudio
@@ -18,20 +18,23 @@ agreed_posting_campaign_term: false
 
 ## はじめに
 
-本記事は、SageMaker Unified Studio を使ったデータカタログ構築の入門記事です。そもそも「アセット」とは何か、なぜ必要なのかといった概念の整理から始め、最終的に **AWS CLI を使って Glue テーブルからアセットを作成する** ところまでを記載します。
+本記事は、SageMaker Unified Studio を使ったデータカタログ構築の入門記事です。  
+そもそも「アセット」とは何か、なぜ必要なのかといった概念を整理します。
 
 「Unified Studio を触り始めたけれど、アセットという言葉が出てきてもピンとこない」「Glue テーブルを Unified Studio のカタログに登録したいが、どういう仕組みで、どんな準備が必要なのか分からない」といった方に向けた内容です。
 
+<!-- なお、AWS CLI を使って Glue テーブルから実際にアセットを作成する具体的な手順は、別記事にまとめています。手を動かして試したい方は本記事のあとに以下をご覧ください。
+
+👉 [SageMaker Unified Studio で Glue テーブルからアセットを作成する（AWS CLI 手順）](https://qiita.com/swkky/items/) -->
+
 ### この記事で解説すること
 
-- アセットとは何か（Glue テーブルとの関係、ビジネスコンテキストの役割）
+- アセットとは何か
 - ドメイン・プロジェクト・アセットの関係性、パブリッシュとサブスクリプションの仕組み
-- なぜアセットが必要なのか（データコラボレーション / データガバナンス / Data Agent 活用）
-- AWS CLI を使って Glue テーブルからアセットを作成する具体的な手順（データソース作成 → データソースラン実行 → アセット確認）
+- なぜアセットが必要なのか
 
 ### 前提知識
 
-- AWS の基本的な操作（IAM、AWS CLI）
 - Glue Data Catalog（データベース / テーブル）の基礎知識
 - Lake Formation の概要（権限管理の考え方）を知っていると理解がスムーズです
 
@@ -41,13 +44,13 @@ SageMaker Unified Studio（DataZone）における「[アセット](https://docs
 
 - Glue テーブル 1 つ = アセット 1 つ
 - アセットにはビジネス名、Description、グロサリー用語、メタデータフォーム等のビジネスコンテキストを付与できる
-<!-- - パブリッシュすると Unified Studio ドメイン全体のユーザーがカタログ検索で発見可能になる (実データの参照にはサブスクリプションが必要)
-  - 次の章で解説しています。 -->
-- 実データではなく、**メタデータの管理単位**
+- Glue Data Catalog と同じで実データではなく、**メタデータの管理単位**です。
 
 #### 具体例: Glue テーブル `sales_transactions` をアセット化した場合
 
 例えば、Glue Data Catalog 上に `sales_transactions` というテーブルがあるとします。このテーブルをアセットとして登録し、ビジネスコンテキストを付与すると以下のようになります。
+アセットは、Glue Data Catalog で保持されているスキーマ、S3 Location などの技術的なメタデータも包含しています。
+Glue Data Catalog を拡張した概念というイメージで良いと思います。
 
 | 項目 | テクニカル情報（Glue Data Catalog 側） | ビジネスコンテキスト（アセット側で付与） |
 |------|--------------------------|----------------------------------------|
@@ -58,7 +61,7 @@ SageMaker Unified Studio（DataZone）における「[アセット](https://docs
 | **カラム: `cust_id`** | STRING 型 | ビジネス名: 顧客 ID、説明: 顧客マスタの主キーと結合可能 |
 | **メタデータフォーム** | — | データオーナー: セールスチーム、更新頻度: 日次、PII 有無: なし |
 
-このように、テクニカルなテーブル名やカラム名だけでは分からない「このデータは何を意味するのか」「誰が管理しているのか」「どう使えるのか」といったビジネス上の文脈を付与できるのがアセットの役割です。
+このように、Glue 側のテーブル名 (sales_transactions) やカラム名 (txn_amt) だけでは分からない「このデータは何を意味するのか」「誰が管理しているのか」「データの更新頻度」といったビジネス上の文脈を付与できるのがアセットです。
 
 なお、Glue テーブル/ビューだけでなく、以下のような対象にアセットを作成することも可能です。
 
@@ -219,313 +222,17 @@ graph TB
 
 なお、現時点で SageMaker Data Agent は Unified Studio 内のノートブック、クエリエディタからのみ利用可能です。
 
-本記事では、AWS CLI を使って **Glue テーブルに対するデータソースを作成し、データソースランを実行してアセットを生成する**までの手順を解説します。
+<!-- ## Glue テーブルからアセットを作成するには
 
-## アセットの作成方法
+ここまでで、アセットとは何か、なぜ必要なのかという概念を整理してきました。実際に AWS CLI を使って **Glue テーブルに対するデータソースを作成し、データソースランを実行してアセットを生成する**具体的な手順は、別記事にまとめています。手を動かして試したい方は以下をご覧ください。
 
-長くなりましたが、いよいよここから Glue テーブルに対するアセットの作成方法についてです。
-
-## 前提条件
-
-- SageMaker Unified Studio ドメイン（IdC ベース / V2）が作成済み
-- 対象プロジェクトが存在し、Glue 接続（connection）が設定済み
-- 対象の Glue テーブルが Glue Data Catalog に存在
-- **対象の Glue データベース・テーブル、および S3 Location が Lake Formation の権限管理下にあること**
-
-### Lake Formation の権限管理下に置く
-
-SageMaker Unified Studio プロジェクト外部の Glue データベースのテーブルをアセットとしてパブリッシュ・サブスクリプションするには、以下を Lake Formation の権限管理下に設定する必要があります。
-
-> Configure the Amazon S3 location for your data lake in AWS Lake Formation with **Lake Formation** permission mode or **Hybrid access mode**.
->
-> — [Configure Lake Formation permissions for Amazon SageMaker Unified Studio](https://docs.aws.amazon.com/sagemaker-unified-studio/latest/userguide/lake-formation-permissions-for-amazon-sagemaker-unified-studio.html)
-
-具体的には以下の設定が必要です。
-
-| 設定項目 | 内容 |
-|---------|------|
-| **S3 Location の登録** | Glue テーブルのデータが格納されている S3 パスを Lake Formation に「データレイクロケーション」として登録する（Permission mode: **Lake Formation** または **Hybrid**） |
-| **IAMAllowedPrincipals の取り消し** | 対象データベース・テーブルの `IAMAllowedPrincipals` グループ権限を取り消し、Lake Formation による細粒度アクセス制御を有効化する |
-
-> The Glue database must be Lake Formation managed. The Glue table must be Lake Formation managed.
->
-> — [Get started with importing and querying data sets for AWS Glue Data Catalog and Amazon S3 in Amazon SageMaker Unified Studio](https://docs.aws.amazon.com/next-generation-sagemaker/latest/userguide/getting-started-sagemaker-gdc-s3.html)
-
-## 事前確認: プロジェクトの Glue 接続 ID を取得
-
-データソース作成時に `--connection-identifier` で指定する Glue 接続 ID を確認します。接続はプロジェクト作成時に自動生成されます。
-
-```bash
-aws datazone list-connections \
-  --domain-identifier <ドメインID> \
-  --project-identifier <プロジェクトID> \
-  --region ap-northeast-1
-```
-
-`"type": "GLUE"` の `connectionId` を控えておきます。
-
-## 必要な Lake Formation 権限
-
-プロジェクトの IAM ロール（`datazone_usr_role_<プロジェクトID>_<サフィックス>`）に対して、以下の Lake Formation 権限が必要です。
-
-### 最小権限（データソース作成 + クエリ実行）
-
-| レベル | 必要な権限 |
-|--------|-----------|
-| データベース | `DESCRIBE` |
-| テーブル | `DESCRIBE`, `SELECT` |
-
-### フル権限（+ サブスクリプションで他プロジェクトへ共有する場合）
-
-| レベル | 必要な権限 |
-|--------|-----------|
-| データベース | `DESCRIBE`, `DESCRIBE_GRANTABLE` |
-| テーブル | `DESCRIBE`, `SELECT`, `DESCRIBE_GRANTABLE`, `SELECT_GRANTABLE` |
-
-### 権限付与コマンド
-
-**データベースレベル:**
-```bash
-aws lakeformation grant-permissions \
-  --principal '{"DataLakePrincipalIdentifier": "arn:aws:iam::<AWSアカウントID>:role/datazone_usr_role_<プロジェクトID>_<サフィックス>"}' \
-  --resource '{"Database": {"CatalogId": "<AWSアカウントID>", "Name": "<Glueデータベース名>"}}' \
-  --permissions '["DESCRIBE"]' \
-  --permissions-with-grant-option '["DESCRIBE"]' \
-  --region ap-northeast-1
-```
-
-**テーブルレベル:**
-```bash
-aws lakeformation grant-permissions \
-  --principal '{"DataLakePrincipalIdentifier": "arn:aws:iam::<AWSアカウントID>:role/datazone_usr_role_<プロジェクトID>_<サフィックス>"}' \
-  --resource '{"Table": {"CatalogId": "<AWSアカウントID>", "DatabaseName": "<Glueデータベース名>", "Name": "<テーブル名>"}}' \
-  --permissions '["DESCRIBE", "SELECT"]' \
-  --permissions-with-grant-option '["DESCRIBE", "SELECT"]' \
-  --region ap-northeast-1
-```
-
-:::note
-プロジェクトの IAM ロール名は `get-data-source` の結果に含まれる `dataAccessRole` で確認できます。
-:::
-
-## 全体フロー
-
-```
-1. create-data-source   → データソース定義を作成
-2. get-data-source      → ステータスが READY になったことを確認
-3. start-data-source-run → Glue テーブルのメタデータをスキャン
-4. get-data-source-run  → ステータスが SUCCESS になったことを確認
-5. search (ASSET)       → アセットが作成されたことを確認
-```
-
-## 手順
-
-### Step 1: データソースの作成
-
-```bash
-aws datazone create-data-source \
-  --domain-identifier <ドメインID> \
-  --project-identifier <プロジェクトID> \
-  --name "<データソース名>" \
-  --type GLUE \
-  --connection-identifier <接続ID> \
-  --configuration '{
-    "glueRunConfiguration": {
-      "catalogName": "<AWSアカウントID>",
-      "autoImportDataQualityResult": true,
-      "relationalFilterConfigurations": [{
-        "databaseName": "<Glueデータベース名>",
-        "filterExpressions": [{
-          "type": "INCLUDE",
-          "expression": "<テーブル名>"
-        }]
-      }]
-    }
-  }' \
-  --recommendation '{"enableBusinessNameGeneration": false}' \
-  --enable-setting ENABLED \
-  --no-publish-on-import \
-  --region ap-northeast-1
-```
-
-**出力例:**
-```json
-{
-    "id": "dtp3ka0l89zz15",
-    "status": "CREATING"
-}
-```
-
-#### 主要パラメータの説明
-
-| パラメータ | 説明 |
-|-----------|------|
-| `--domain-identifier` | DataZone ドメイン ID（`dzd-xxxxx`） |
-| `--project-identifier` | アセットを所属させるプロジェクト ID |
-| `--connection-identifier` | Glue 接続の ID（プロジェクト作成時に自動生成される） |
-| `catalogName` | **AWS アカウント ID** |
-| `databaseName` | Glue データベース名 |
-| `filterExpressions` | 取り込むテーブルのフィルタ（`*` で全テーブル） |
-| `--no-publish-on-import` | アセット作成時にカタログへ自動パブリッシュしない |
-| `enableBusinessNameGeneration` | AI によるビジネス名自動生成の有無 |
-
-今回は検証のためにオンデマンドで start-data-source-run を実行しますが、--schedule を設定することで、定期的に実行してスキーマの更新等も可能です。
-
-### Step 2: データソースのステータス確認
-
-```bash
-aws datazone get-data-source \
-  --domain-identifier <ドメインID> \
-  --identifier <Step1で取得したデータソースID> \
-  --region ap-northeast-1
-```
-
-**成功時の出力（抜粋）:**
-```json
-{
-    "id": "dtp3ka0l89zz15",
-    "status": "READY",
-    "type": "GLUE",
-    "name": "<データソース名>",
-    "configuration": {
-        "glueRunConfiguration": {
-            "catalogName": "<AWSアカウントID>",
-            "relationalFilterConfigurations": [{
-                "databaseName": "<Glueデータベース名>",
-                "filterExpressions": [{"type": "INCLUDE", "expression": "<テーブル名>"}]
-            }],
-            "autoImportDataQualityResult": true
-        }
-    },
-    "publishOnImport": false,
-    "lastRunAssetCount": 0
-}
-```
-
-`"status": "READY"` になっていれば成功です。
-
-### Step 3: データソースランの実行
-
-```bash
-aws datazone start-data-source-run \
-  --domain-identifier <ドメインID> \
-  --data-source-identifier <データソースID> \
-  --region ap-northeast-1
-```
-
-**出力例:**
-```json
-{
-    "id": "5173nxdn633hnd",
-    "status": "REQUESTED"
-}
-```
-
-### Step 4: データソースランの結果確認
-
-```bash
-aws datazone get-data-source-run \
-  --domain-identifier <ドメインID> \
-  --identifier <Step3で取得したランID> \
-  --region ap-northeast-1
-```
-
-**成功時の出力（抜粋）:**
-```json
-{
-    "id": "5173nxdn633hnd",
-    "status": "SUCCESS",
-    "runStatisticsForAssets": {
-        "added": 1,
-        "updated": 0,
-        "unchanged": 0,
-        "failed": 0
-    },
-    "lineageSummary": {
-        "importStatus": "SUCCESS"
-    }
-}
-```
-
-`"status": "SUCCESS"` かつ `"added": 1` であればアセット作成完了です。
-
-### Step 5: 作成されたアセットの確認
-
-```bash
-aws datazone search \
-  --domain-identifier <ドメインID> \
-  --owning-project-identifier <プロジェクトID> \
-  --search-scope ASSET \
-  --search-text "<テーブル名>" \
-  --region ap-northeast-1
-```
-
-**出力例:**
-```json
-{
-    "items": [
-        {
-            "assetItem": {
-                "identifier": "6b8qjy97lm9qxl",
-                "name": "<テーブル名>",
-                "typeIdentifier": "amazon.datazone.GlueTableAssetType",
-                "externalIdentifier": "arn:aws:glue:ap-northeast-1:<AWSアカウントID>:table/<データベース名>/<テーブル名>.<プロジェクトID>",
-                "createdBy": "SYSTEM",
-                "owningProjectId": "<プロジェクトID>"
-            }
-        }
-    ],
-    "totalMatchCount": 1
-}
-```
-
-## 次のステップ
-
-アセットには以下のビジネスコンテキストを付与することが出来ます。
-
-| レベル | フィールド | 説明 |
-|--------|-----------|------|
-| アセット | Business Name（ビジネス名） | テクニカル名とは別に設定する表示名。検索結果に直接表示される |
-| アセット | Description (summary) | アセットの説明文（自由記述） |
-| アセット | README | Markdown形式の詳細ドキュメント |
-| アセット | グロサリー | ビジネス用語の紐付け |
-| アセット | メタデータフォーム | カスタム属性（キー・バリュー） |
-| カラム | Business Name（ビジネス名） | カラムのテクニカル名とは別の表示名 |
-| カラム | Description | カラムの説明文 |
-| カラム | README | カラムレベルのMarkdownドキュメント |
-| カラム | グロサリー | カラムへのビジネス用語の紐付け |
-| カラム | メタデータフォーム | カラムへのカスタム属性 |
-
-**パブリッシュ**することで Unified Studio ドメイン全体のユーザーが当該アセットを検索・発見可能になります。
-
-## データソースランとビジネスメタデータの関係
-
-ちなみに、データソースランを再実行すると、Glue カタログからテクニカルメタデータ (スキーマ、Glue カタログ側のカラムに対するコメント等) が再取得されますが、DataZone 側で管理されるビジネスメタデータは全てデータソースランの影響を受けません。
-
-## UI からの確認
-
-CLI でのデータソースラン完了後、SageMaker Unified Studio の UI からもアセットが作成されていることを確認できました。
-
-1. 左側ハンバーガーメニューの一番下 管理->アセットを選択
-2. アセットを検索 の検索窓にGlueテーブル名を入力
-3. 作成されたアセットが表示される
-
-![SageMaker Unified Studio アセット詳細画面](https://raw.githubusercontent.com/swkky/swkky-zenn-qiita-articles/main/images/sagemaker-unified-studio-asset-detail.jpg)
-
-なお、create-data-source 実行時に--no-publish-on-importを記述しているため、当該アセットは未パブリッシュの状態です。
-画面右上のアセットを公開を押下することでパブリッシュ可能です。  
-アセット詳細画面では以下が確認できます:
-
-- **ビジネスメタデータタブ** — 概要、README、用語集の用語、メタデータフォームの確認・編集
-- **メタデータフォーム「AWS Glue テーブル」** — Glue データカタログ ID、データベース名、場所、リージョン、テーブル ARN 等がデータソースランにより自動設定
-- **右ペイン（アセットの詳細）** — 所有プロジェクト、ドメインユニット、サブスクリプションの承認設定、最終更新者（SYSTEM）、作成日時等
+👉 [SageMaker Unified Studio で Glue テーブルからアセットを作成する（AWS CLI 手順）](https://qiita.com/swkky/items/) -->
 
 ## 次の記事
 
 別の記事ではアセットに付与できるビジネスコンテキスト、AWS CLIでの付与方法について紹介しています。
 
 👉 [Data Agent 活用の観点で SageMaker Unified Studio のアセットに付与すべきビジネスコンテキストと優先度](https://qiita.com/swkky/items/9bbb5a7251b3a8adf063)
-
 👉 [SageMaker Unified Studio アセットにビジネスメタデータをAWS CLIから付与する](https://qiita.com/swkky/items/d84b98fceff972c14fa4)
 
 ## 参考
