@@ -222,18 +222,17 @@ graph TB
 
 なお、現時点で SageMaker Data Agent は Unified Studio 内のノートブック、クエリエディタからのみ利用可能です。
 
-<!-- ## Glue テーブルからアセットを作成するには
+## 次のステップ
 
-ここまでで、アセットとは何か、なぜ必要なのかという概念を整理してきました。実際に AWS CLI を使って **Glue テーブルに対するデータソースを作成し、データソースランを実行してアセットを生成する**具体的な手順は、別記事にまとめています。手を動かして試したい方は以下をご覧ください。
+実際にアセットを作成する方法は以下の記事に記載しています。
 
-👉 [SageMaker Unified Studio で Glue テーブルからアセットを作成する（AWS CLI 手順）](https://qiita.com/swkky/items/) -->
+- [【SageMaker Unified Studio】Glue テーブルに対してアセットを作成する](https://qiita.com/swkky/items/f7db750d1d5d8ff7254b)
+- [【SageMaker Unified Studio】Zero-ETL 統合ターゲット Redshift タイプ Glue カタログに対してアセットを作成する](https://qiita.com/swkky/items/1ad22b12b7ed3f4d1051)
 
-## 次の記事
+## 関連記事
 
-別の記事ではアセットに付与できるビジネスコンテキスト、AWS CLIでの付与方法について紹介しています。
-
-👉 [Data Agent 活用の観点で SageMaker Unified Studio のアセットに付与すべきビジネスコンテキストと優先度](https://qiita.com/swkky/items/9bbb5a7251b3a8adf063)
-👉 [SageMaker Unified Studio アセットにビジネスメタデータをAWS CLIから付与する](https://qiita.com/swkky/items/d84b98fceff972c14fa4)
+- [Data Agent 活用の観点で SageMaker Unified Studio のアセットに付与すべきビジネスコンテキストと優先度](https://qiita.com/swkky/items/9bbb5a7251b3a8adf063)
+- [SageMaker Unified Studio アセットにビジネスメタデータをAWS CLIから付与する](https://qiita.com/swkky/items/d84b98fceff972c14fa4)
 
 ## 参考
 

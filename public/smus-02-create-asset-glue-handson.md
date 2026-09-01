@@ -1,5 +1,5 @@
 ---
-title: 【SageMaker Unified Studio】 Glue テーブルに対してアセットを作成する
+title: 【SageMaker Unified Studio】Glue テーブルに対してアセットを作成する
 tags:
   - AWS
   - SageMakerUnifiedStudio

@@ -1,5 +1,5 @@
 ---
-title: 【SageMaker Unified Studio】Zero-ETL 統合ターゲットの Redshift タイプ Glue カタログからアセットを作成する
+title: 【SageMaker Unified Studio】Zero-ETL 統合ターゲット Redshift タイプ Glue カタログに対してアセットを作成する
 tags:
   - AWS
   - SageMakerUnifiedStudio
