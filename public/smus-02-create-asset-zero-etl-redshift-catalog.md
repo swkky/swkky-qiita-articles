@@ -18,7 +18,9 @@ agreed_posting_campaign_term: false
 
 ## はじめに
 
-そもそも「アセット」とは何か、ドメイン・プロジェクト・アセットの関係性、なぜアセットが必要なのかといった概念については、以下の記事で解説しています。
+本記事は、AWS CLI で Redshift タイプの Glue カタログに対してアセットを作成する手順をまとめた記事です。
+
+そもそも「アセット」とは何か、ドメイン・プロジェクト・アセットの関係性、なぜアセットが必要なのかといった概念については、以下の記事にまとめてます。
 
 👉 [SageMaker Unified Studio におけるデータ活用・ガバナンスの肝「アセット」を深掘りしてみる](https://qiita.com/swkky/items/092df5056ee13b7a9297)
 
@@ -74,6 +76,14 @@ PostgreSQL 統合ではテーブルが **`zetl_default`** というデータベ�
 | データ実体 | S3 | Redshift Managed Storage |
 
 **ポイント**: ターゲットが Redshift タイプのカタログでも、データソースは **`--type GLUE`** で作成し、`catalogName` にサブカタログを指定します。
+
+## 前提条件
+
+- SageMaker Unified Studio ドメイン（IdC ベース / V2）が作成済み
+- 対象プロジェクトが存在し、ターゲットカタログに紐づく Glue 接続が設定済み
+- Aurora の Zero-ETL 統合が作成済みで、ターゲット Glue カタログ配下にサブカタログ・テーブルが生成されていること
+- **Zero-ETL 統合のセットアップ時に、ターゲット Glue カタログが Lake Formation の権限管理下に設定済みであること**（`AWSServiceRoleForRedshift` を read-only の Lake Formation 管理者として登録する等。詳細は [Amazon RDS zero-ETL integration with Amazon SageMaker lakehouse](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/zero-etl.creating-smlh.html)）
+- アセットを作成するプロジェクトのデータアクセスロールが、対象サブカタログ/データベース/テーブルへの Lake Formation 権限（`DESCRIBE` / `SELECT` 相当）を持つこと
 
 ## 全体フロー
 

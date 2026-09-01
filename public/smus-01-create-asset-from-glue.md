@@ -27,7 +27,7 @@ agreed_posting_campaign_term: false
 
 👉 [SageMaker Unified Studio で Glue テーブルからアセットを作成する（AWS CLI 手順）](https://qiita.com/swkky/items/) -->
 
-### この記事で解説すること
+### この記事で記載していること
 
 - アセットとは何か
 - ドメイン・プロジェクト・アセットの関係性、パブリッシュとサブスクリプションの仕組み
