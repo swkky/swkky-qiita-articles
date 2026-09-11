@@ -472,7 +472,7 @@ DynamoDB Zero-ETL → S3（Iceberg）のクロスアカウント構成は、公�
 2. **命名規則**（ハイフン不可）はエラーメッセージからしか分からない
 3. **実行順序**が厳密（ターゲット側を全て先に設定してからソース側で統合作成）
 
-一度設定が通れば、DynamoDB のデータが自動的に Iceberg 形式で S3 に同期され、Athena や SageMaker Unified Studio からすぐにクエリできます。Redshift Serverless が不要になるためコスト削減にも有効です。
+一度設定が通れば、DynamoDB のデータが自動的に Iceberg 形式で S3 に同期され、Athena や SageMaker Unified Studio からすぐにクエリできます。
 
 ---
 
