@@ -20,7 +20,7 @@ agreed_posting_campaign_term: false
 
 SageMaker Unified Studio（DataZone V2）では、Glue テーブルを「アセット」としてカタログに登録し、ビジネスコンテキスト（メタデータ）を付与できます。
 
-アセットの概要や作成手順については[前の記事](https://qiita.com/swkky/items/092df5056ee13b7a9297)で解説しているので、そちらを参照してください。
+アセットについては[別の記事](https://qiita.com/swkky/items/092df5056ee13b7a9297)で解説しているので、そちらを参照してください。
 
 本記事では、**アセットに付与可能なビジネスコンテキストの全体像**と、特に **Data Agent 活用の観点でどこから手をつけるべきか**を整理します。
 
@@ -89,21 +89,17 @@ Agent によるデータ探索、およびSQL、スクリプト生成の両方�
 
 **書くべき内容:**
 
-1. カラムの業務的な意味（日本語）
+(1) カラムの業務的な意味（日本語）
   - 例: このレコードが属するキャンペーンの一意識別子。campaign テーブルの campaign_id と対応する外部キー。
-2. 取りうる値と意味
+
+(2) 取りうる値と意味
   - 例: ステータスコード。1=有効、2=下書き、3=終了済み、9=削除済み。通常の分析では status = 1 のみを対象にすること。
-3. フィルタ条件の注意点
+
+(3) フィルタ条件の注意点
   - 例: 論理削除フラグ。is_deleted = 0 のレコードのみが有効。クエリには必ず is_deleted = 0 の条件を付けること。
-4. JOIN 先テーブルとキーの情報
+
+(4) JOIN 先テーブルとキーの情報
   - 例: 外部キー。customer テーブルの customer_id と JOIN することで顧客属性を取得できる。
-
-**例:**
-
-| カラム | Description |
-|--------|-------------|
-| `cust_id` | 顧客の一意識別子。orders テーブルとの結合キー。 |
-| `order_detail` | 注文明細を格納する struct 型。主な子フィールド: order_date.S（注文日 YYYYMMDD）、product_name.S（商品名）、quantity.N（数量）、amount.N（金額）。Athena では order_detail.order_date.S のようにドット記法でアクセス。 |
 
 ### 2位: アセットの Description (summary)
 
@@ -111,17 +107,13 @@ Agent によるデータ探索、およびSQL、スクリプト生成の両方�
 
 **書くべき内容:**
 
-- テーブルの用途・業務上の意味
-- 主要カラムの説明
-- フィルタ条件や集計時の注意点（例：status = 'active' のみ有効なレコードを対象にする、など）
-- クエリ方法 (クエリエンジン、FROM句など)
+(1) テーブルの用途・業務上の意味
 
-**例:**
+(2) 主要カラムの説明
 
-```
-EC サイトの注文トランザクションテーブル。
-顧客ID・注文日時・商品・数量・金額を記録。売上分析・在庫管理に使用。
-```
+(3) フィルタ条件や集計時の注意点（例：status = 'active' のみ有効なレコードを対象にする、など）
+
+(4) クエリ方法 (クエリエンジン、FROM句など)
 
 ### 3位: Business Name（アセット＋カラム）
 
@@ -144,7 +136,7 @@ EC サイトの注文トランザクションテーブル。
 > You can ask the Data Agent questions using the **business terminology defined in your catalog**. The agent matches your terms against glossary terms...
 > — [Using Business Context with the SageMaker Data Agent](https://docs.aws.amazon.com/sagemaker-unified-studio/latest/userguide/data-agent-business-catalog.html)
 
-グロサリーの `long_description` にシノニム（同義語）、適用テーブル、主要カラムを含めておくと、Agent の探索精度が上がると思います。
+グロサリーの `long_description` にシノニム（同義語）、適用テーブル、主要カラムを含めておくと、Data Agent の探索精度が上がると思います。
 
 ## まとめ
 

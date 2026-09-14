@@ -20,9 +20,7 @@ agreed_posting_campaign_term: false
 
 本記事は、AWS CLI で Redshift タイプの Glue カタログに対してアセットを作成する手順をまとめた記事です。
 
-そもそも「アセット」とは何か、ドメイン・プロジェクト・アセットの関係性、なぜアセットが必要なのかといった概念については、以下の記事にまとめてます。
-
-👉 [SageMaker Unified Studio におけるデータ活用・ガバナンスの肝「アセット」を深掘りしてみる](https://qiita.com/swkky/items/092df5056ee13b7a9297)
+そもそも「アセット」とは何か、ドメイン・プロジェクト・アセットの関係性、なぜアセットが必要なのかといった概念については、[別の記事](https://qiita.com/swkky/items/092df5056ee13b7a9297)にまとめてます。
 
 本記事では **Zero-ETL 統合ターゲットに指定可能な Redshift タイプの Glue カタログ**に属するテーブルをアセット化する手順を扱います。  
 現時点で、RDS のゼロ ETL 統合では、ターゲットとして以下の 2 種類しか選択できず、S3 を直接ターゲットに出来ません。 
@@ -277,4 +275,3 @@ aws datazone search \
 
 - [Create an Amazon SageMaker Unified Studio data source for AWS Glue in the project catalog](https://docs.aws.amazon.com/sagemaker-unified-studio/latest/userguide/data-source-glue.html)
 - [Aurora zero-ETL integrations with Amazon Redshift](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/zero-etl.html)
-- [【SageMaker Unified Studio 入門】「アセットってなに？」を理解して、AWS CLI から作成してみる](https://qiita.com/swkky/items/092df5056ee13b7a9297)

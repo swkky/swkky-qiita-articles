@@ -23,7 +23,8 @@ agreed_posting_campaign_term: false
 ## はじめに
 
 現状、RDS（Aurora を含む）をデータソースとするゼロ ETL 統合では、ターゲットは以下の 2 つから選択することになります。  
-残念ながら、S3 は指定出来ません。。。DynamoDB がデータソースの場合は S3 を指定可能です。(Iceberg or S3Tables)
+残念ながら、S3 は指定出来ません。。。  
+DynamoDB がデータソースの場合は S3 を指定可能です。(Iceberg or S3Tables)
 
 | # | ターゲット | 概要 |
 |---|-----------|------|
@@ -42,12 +43,12 @@ agreed_posting_campaign_term: false
 
 パターン A では、データの実体は AWS Glue Data Catalog（Redshift マネージドカタログ）に対して自動的に作成されるマネージドワークグループに格納され、このワークグループは **AWS 側で管理される**ため、ユーザーがコスト最適化のためのパラメータを触れません。具体的には次の 2 点です。
 
-### デメリット 1：`REFRESH_INTERVAL`（複製間隔）を指定・調整できない
+### デメリット 1：`REFRESH_INTERVAL`（CDC 間隔）を指定・調整できない
 
 Redshift のゼロ ETL では、CDC (Change Data Capture) の頻度を `REFRESH_INTERVAL` で制御できます。これはコストに直結するパラメータです。
 
 - 間隔を**短く**すると CDC のリアルタイム性は上がるが、複製処理のためのコンピュートコストが上がる
-- 間隔を**長く**（例：5 分以上）すると、即時性が不要なワークロード（レポーティングや履歴分析など）ではコンピュート課金を抑えられる
+- 間隔を**長く**（例：5 分以上）すると、リアルタイム性が不要なワークロードではコンピュート課金を抑えられる
 
 公式ドキュメントでも、ゼロ ETL のコスト最適化手段として `REFRESH_INTERVAL` の調整が挙げられています。
 
@@ -55,7 +56,7 @@ Redshift のゼロ ETL では、CDC (Change Data Capture) の頻度を `REFRESH_
 
 出典: [Billing for Amazon Redshift Serverless — Cost optimization for Amazon Redshift Serverless with zero-ETL](https://docs.aws.amazon.com/redshift/latest/mgmt/serverless-billing.html)
 
-**パターン A では、この `REFRESH_INTERVAL` をユーザー側で指定・調整する手段がありません。**   
+現状、**パターン A では、この `REFRESH_INTERVAL` をユーザー側で指定・調整する手段が無く**、問答無用でデフォルトの 0 秒が適用されてしまいます。
 そのため、リアルタイム性が不要なワークロードであっても CDC の間隔を伸ばしてコストを下げる、といったチューニングができません。
 
 ### デメリット 2： Redshift の RPU（基本キャパシティ） を指定・調整できない
@@ -66,7 +67,7 @@ Redshift Serverless の課金は RPU（Redshift Processing Unit）ベースで�
 
 出典: [Billing for Amazon Redshift Serverless — Cost optimization for Amazon Redshift Serverless with zero-ETL](https://docs.aws.amazon.com/redshift/latest/mgmt/serverless-billing.html)
 
-**パターン A では、ターゲットの Redshift Serverless がマネージドで、base RPU や max RPU をユーザー側で指定・調整できません。** 
+**パターン A では、ターゲットの Redshift Serverless がマネージドで、base/max RPU をユーザー側で指定・調整できない。** 
 
 ---
 
@@ -74,8 +75,8 @@ Redshift Serverless の課金は RPU（Redshift Processing Unit）ベースで�
 
 上記 2 点の裏返しですが、Redshift Serverless を直接、ゼロ ETL のターゲットにすると、両方を制御可能です。
 
-- **`REFRESH_INTERVAL` を調整**して、リアルタイム性の要件とコストのバランスを取れる（`ALTER DATABASE` で変更可能）
-- **base RPU capacity を調整**して、ワークロードに見合ったキャパシティに右サイズできる
+- **`REFRESH_INTERVAL` を調整**して、リアルタイム性の要件とコストのバランスを取れる（[`ALTER DATABASE`](https://docs.aws.amazon.com/redshift/latest/mgmt/serverless-billing.html#db-serverless-zetl) で変更可能）
+- **base/max RPU capacity を調整**して、ワークロードに見合ったキャパシティに右サイズできる
 
 出典: [Cost optimization for Amazon Redshift Serverless with zero-ETL](https://docs.aws.amazon.com/redshift/latest/mgmt/serverless-billing.html)
 
@@ -85,11 +86,11 @@ Redshift Serverless の課金は RPU（Redshift Processing Unit）ベースで�
 
 | コスト最適化のレバー | A：Glue フェデレーテッドカタログ | B：Redshift Serverless 直接 |
 |--------------------|-------------------------------|---------------------------|
-| `REFRESH_INTERVAL`（複製間隔） | **指定・調整不可** | 調整可能（`ALTER DATABASE`） |
+| `REFRESH_INTERVAL`（複製間隔） | **指定・調整不可** | 調整可能（[`ALTER DATABASE`](https://docs.aws.amazon.com/redshift/latest/mgmt/serverless-billing.html#db-serverless-zetl)）0〜432,000 秒（5 日間） |
 | RPU（Redshift キャパシティ） | **指定・調整不可** | 調整可能（[UpdateWorkgroup](https://docs.aws.amazon.com/ja_jp/redshift-serverless/latest/APIReference/API_UpdateWorkgroup.html) など） |
 
 ## SageMaker Lakehouse/Unified Studio との統合
-[公式ドキュメント](https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/zero-etl.setting-up.html)だと、SageMaker Lakehouse/Unified Studio に対してゼロ ETL 統合を作成する場合には、パターン A の Glue Redshift マネージドカタログをターゲットにする方法が記載されています。  
+[公式ドキュメント](https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/zero-etl.setting-up.html#zero-etl-setting-up.sagemaker)だと、SageMaker Lakehouse/Unified Studio に対してゼロ ETL 統合を作成する場合には、パターン A の Glue Redshift マネージドカタログをターゲットにする方法が記載されています。  
 しかし、[AWS ブログ](https://aws.amazon.com/jp/blogs/big-data/reduce-time-to-access-your-transactional-data-for-analytical-processing-using-the-power-of-amazon-sagemaker-lakehouse-and-zero-etl/)によると、パターン B の場合でも、Redshift Serverless の名前空間を Glue カタログに登録してフェデレーテッドカタログを作成することで、SageMaker Lakehouse/Unified Studio から参照は可能という情報がありました。
 
 ## まとめ
@@ -102,3 +103,5 @@ Redshift Serverless の課金は RPU（Redshift Processing Unit）ベースで�
 - [Amazon RDS ゼロ ETL 統合](https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/zero-etl.html)
 - [Billing for Amazon Redshift Serverless（ゼロ ETL のコスト最適化）](https://docs.aws.amazon.com/redshift/latest/mgmt/serverless-billing.html)
 - [Creating Amazon RDS zero-ETL integrations with an Amazon SageMaker lakehouse](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/zero-etl.creating-smlh.html)
+
+[CREATE DATABASE - Amazon Redshift](https://docs.aws.amazon.com/redshift/latest/dg/r_CREATE_DATABASE.html)
