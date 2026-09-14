@@ -7,7 +7,7 @@ tags:
   - redshift
   - ZeroETL
 private: false
-updated_at: '2026-09-11T14:29:28+09:00'
+updated_at: '2026-09-14T09:48:58+09:00'
 id: 723afabf2dfb3a006967
 organization_url_name: null
 slide: false
