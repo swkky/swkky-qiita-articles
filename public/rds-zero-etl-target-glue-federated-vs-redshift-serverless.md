@@ -1,5 +1,7 @@
 ---
-title: RDS/Aurora ゼロ ETL のターゲット選択の罠：Glue フェデレーテッドカタログでは REFRESH_INTERVAL と RPU を調整できない
+title: >-
+  RDS/Aurora ゼロ ETL のターゲット選択の罠：Glue フェデレーテッドカタログでは REFRESH_INTERVAL と RPU
+  を調整できない
 tags:
   - AWS
   - RDS
@@ -7,7 +9,7 @@ tags:
   - glue
   - ZeroETL
 private: false
-updated_at: '2026-09-14T09:48:58+09:00'
+updated_at: '2026-09-23T14:18:29+09:00'
 id: d2f366f7b5270f4ea307
 organization_url_name: null
 slide: false
