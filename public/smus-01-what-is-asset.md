@@ -1,5 +1,5 @@
 ---
-title: SageMaker Unified Studio におけるデータ活用・ガバナンスの肝「アセット」を深掘りしてみる
+title: 【SageMaker Unified Studio】 AWS におけるセマンティックレイヤー「アセット」を深掘りしてみる
 tags:
   - AWS
   - SageMakerUnifiedStudio
@@ -44,15 +44,18 @@ agreed_posting_campaign_term: false
 SageMaker Unified Studio（DataZone）における「[アセット](https://docs.aws.amazon.com/ja_jp/datazone/latest/userguide/datazone-concepts.html#datazone-terms)」とは、テーブルやビューなどの**データオブジェクトに対応するカタログ上の管理単位**です。
 
 - Glue テーブル 1 つ = アセット 1 つ
-- アセットにはビジネス名、Description、データオーナー、個人情報の有無などビジネスコンテキストを付与できる
+- アセットにはビジネス名、Description、データオーナー、個人情報の有無など様々なビジネスコンテキストを付与できる
 - 実データではなく、**メタデータの管理単位**
+
+いわゆるセマンティックレイヤーってやつですね。  
+最近よく耳にするようになった AI-Ready なデータ基盤構築に必要な要素がアセットです。
 
 #### 具体例: Glue テーブル `sales_transactions` をアセット化した場合
 
 例えば、Glue Data Catalog 上に `sales_transactions` というテーブルがあるとします。このテーブルをアセットとして登録し、ビジネスコンテキストを付与すると以下のようになります。
 このように、Glue 側のテーブル名 (sales_transactions) やカラム名 (txn_amt) だけでは分からない「このデータは何を意味するのか」「誰が管理しているのか」「データの更新頻度」といったビジネス上の文脈を付与できるのがアセットです。
-アセットは、Glue Data Catalog で保持されているスキーマ、S3 Location などの技術的なメタデータも包含しています。
-Glue Data Catalog を拡張した概念というイメージで良いと思います。
+アセットは元々 Glue Data Catalog 側で保持されているスキーマ、S3 Location などの技術的なメタデータも包含しています。  
+Glue Data Catalog をセマンティックレイヤーに拡張するための箱というイメージで良いと思います。
 
 | 項目 | テクニカル情報（Glue Data Catalog 側） | ビジネスコンテキスト（アセット側で付与） |
 |------|--------------------------|----------------------------------------|

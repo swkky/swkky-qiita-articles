@@ -1,5 +1,5 @@
 ---
-title: RDS ゼロ ETL のターゲット選択：Glue フェデレーテッドカタログでは REFRESH_INTERVAL と RPU を調整できない
+title: RDS/Aurora ゼロ ETL のターゲット選択の罠：Glue フェデレーテッドカタログでは REFRESH_INTERVAL と RPU を調整できない
 tags:
   - AWS
   - RDS
@@ -22,9 +22,8 @@ agreed_posting_campaign_term: false
 
 ## はじめに
 
-現状、RDS（Aurora を含む）をデータソースとするゼロ ETL 統合では、ターゲットは以下の 2 つから選択することになります。  
-残念ながら、S3 は指定出来ません。。。  
-DynamoDB がデータソースの場合は S3 を指定可能です。(Iceberg or S3Tables)
+現状、RDS/Aurora をデータソースとするゼロ ETL 統合では、ターゲットは以下の 2 つ (いずれも Redshift) から選択することになります。  
+DynamoDB がデータソースの場合は S3 を指定可能ですが、現時点で RDS/Aurora は残念ながら、S3 は指定出来ません。。。 
 
 | # | ターゲット | 概要 |
 |---|-----------|------|
@@ -32,7 +31,7 @@ DynamoDB がデータソースの場合は S3 を指定可能です。(Iceberg o
 | B | **Amazon Redshift（Serverless / Provisioned）直接** | Redshift データウェアハウスを直接ターゲットに指定する。 |
 
 どちらも「ソースの RDS に書き込んだデータをニアリアルタイムでターゲットに複製できる」という点は共通です。  
-しかし、パターン A（Glue フェデレーテッドカタログ）の場合、以下の 2 点の大きな制約があります。
+しかし、パターン A（Glue Redshift マネージドカタログ）の場合、以下の 2 点の大きな制約があります。
 
 - **`REFRESH_INTERVAL`（複製間隔）を指定・調整できない**
 - **RPU（Redshift Serverless のキャパシティ）を指定・調整できない**
@@ -45,10 +44,10 @@ DynamoDB がデータソースの場合は S3 を指定可能です。(Iceberg o
 
 ### デメリット 1：`REFRESH_INTERVAL`（CDC 間隔）を指定・調整できない
 
-Redshift のゼロ ETL では、CDC (Change Data Capture) の頻度を `REFRESH_INTERVAL` で制御できます。これはコストに直結するパラメータです。
+RDS/Aurora のゼロ ETL では、CDC (Change Data Capture) の頻度を `REFRESH_INTERVAL` で制御します。
 
-- 間隔を**短く**すると CDC のリアルタイム性は上がるが、複製処理のためのコンピュートコストが上がる
-- 間隔を**長く**（例：5 分以上）すると、リアルタイム性が不要なワークロードではコンピュート課金を抑えられる
+- **短く**すると CDC のリアルタイム性は上がるが、複製処理のためのコンピュートコストが上がる
+- **長く**（例：5 分以上）すると、リアルタイム性が不要なワークロードではコンピュート課金を抑えられる
 
 公式ドキュメントでも、ゼロ ETL のコスト最適化手段として `REFRESH_INTERVAL` の調整が挙げられています。
 
@@ -75,7 +74,7 @@ Redshift Serverless の課金は RPU（Redshift Processing Unit）ベースで�
 
 上記 2 点の裏返しですが、Redshift Serverless を直接、ゼロ ETL のターゲットにすると、両方を制御可能です。
 
-- **`REFRESH_INTERVAL` を調整**して、リアルタイム性の要件とコストのバランスを取れる（[`ALTER DATABASE`](https://docs.aws.amazon.com/redshift/latest/mgmt/serverless-billing.html#db-serverless-zetl) で変更可能）
+- **`REFRESH_INTERVAL` を調整**して、リアルタイム性の要件とコストのバランスを取れる（[`ALTER DATABASE`](https://docs.aws.amazon.com/redshift/latest/mgmt/serverless-billing.html#db-serverless-zetl) で後から変更も可能）
 - **base/max RPU capacity を調整**して、ワークロードに見合ったキャパシティに右サイズできる
 
 出典: [Cost optimization for Amazon Redshift Serverless with zero-ETL](https://docs.aws.amazon.com/redshift/latest/mgmt/serverless-billing.html)
@@ -91,11 +90,14 @@ Redshift Serverless の課金は RPU（Redshift Processing Unit）ベースで�
 
 ## SageMaker Lakehouse/Unified Studio との統合
 [公式ドキュメント](https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/zero-etl.setting-up.html#zero-etl-setting-up.sagemaker)だと、SageMaker Lakehouse/Unified Studio に対してゼロ ETL 統合を作成する場合には、パターン A の Glue Redshift マネージドカタログをターゲットにする方法が記載されています。  
-しかし、[AWS ブログ](https://aws.amazon.com/jp/blogs/big-data/reduce-time-to-access-your-transactional-data-for-analytical-processing-using-the-power-of-amazon-sagemaker-lakehouse-and-zero-etl/)によると、パターン B の場合でも、Redshift Serverless の名前空間を Glue カタログに登録してフェデレーテッドカタログを作成することで、SageMaker Lakehouse/Unified Studio から参照は可能という情報がありました。
+しかし、Redshift クラスターを Glue カタログに登録してフェデレーテッドカタログを作成し、対象カタログの Lake Formation 権限を Unified Studio のプロジェクト IAM ロールに対して付与することで、Unified Studio からもクエリが可能でした。  
+そのため、コストを優先する場合は、Redshift（Serverless / Provisioned）を直接ターゲットにする方針で良いと思っています。
+
+[Registering a cluster to the AWS Glue Data Catalog - Amazon Redshift](https://docs.aws.amazon.com/redshift/latest/mgmt/register-cluster.html)
 
 ## まとめ
-リアルタイムな連携が必要、運用負荷を抑えたい場合->パターン A （Glue Redshift マネージドカタログ）  
-リアルタイムな連携が不要、コストを抑えたい ->パターン B (Redshift Serverless 直接)
+リアルタイムな連携が必要、もしくは Redshift の運用負荷を抑えたい場合->パターン A （Glue Redshift マネージドカタログ）  
+リアルタイムな連携が不要、コストを抑えたい ->パターン B (Redshift 直接)
 
 
 ## 参考リンク
