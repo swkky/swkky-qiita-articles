@@ -1,5 +1,5 @@
 ---
-title: 【SageMaker Unified Studio】 AWS におけるセマンティックレイヤー「アセット」を深掘りしてみる
+title: 【SageMaker Unified Studio】 AWS のデータ基盤におけるセマンティックレイヤー「アセット」を深掘りしてみる
 tags:
   - AWS
   - SageMakerUnifiedStudio
@@ -20,12 +20,6 @@ agreed_posting_campaign_term: false
 
 本記事は、SageMaker Unified Studio を使ったデータカタログ構築の入門記事です。  
 そもそも「アセット」とは何か、なぜ必要なのかといった概念を整理します。
-
-「Unified Studio を触り始めたけれど、アセットという言葉が出てきてもピンとこない」「Glue テーブルを Unified Studio のカタログに登録したいが、どういう仕組みで、どんな準備が必要なのか分からない」といった方に向けた内容です。
-
-<!-- なお、AWS CLI を使って Glue テーブルから実際にアセットを作成する具体的な手順は、別記事にまとめています。手を動かして試したい方は本記事のあとに以下をご覧ください。
-
-👉 [SageMaker Unified Studio で Glue テーブルからアセットを作成する（AWS CLI 手順）](https://qiita.com/swkky/items/) -->
 
 ### この記事で記載していること
 
@@ -148,12 +142,32 @@ graph TB
 
 ## なぜアセットが必要？
 
-### 1. データコラボレーション
+### 1. AI エージェントの活用
+
+[SageMaker Data Agent](https://docs.aws.amazon.com/sagemaker-unified-studio/latest/userguide/data-agent-business-catalog.html) ではアセットに付与されたビジネスメタデータを参照して、自然言語でデータセットを探索したり、SQL、Python などのコード生成を行うことが出来ます。Data Agent を活用した **AI Ready なデータ基盤**を構築する上で、アセット登録とビジネスメタデータの整備は重要です。  
+具体的にはアセット、ビジネスメタデータを整備することで Data Agent を利用して以下のようなことが可能になります。
+
+1. データの探索
+- 「顧客離脱に関するデータはありますか？」
+  - 該当するデータを保有する可能性があるアセットを一覧で提示してくれる。
+
+2. コード生成
+- 「2026 年 Q3-Q4 における顧客維持率を計算してください。」
+  - 適切なテーブル(アセット)とカラムを使用して、SQL or PySpark コードを生成してくれる。
+
+なお、現時点で SageMaker Data Agent は Unified Studio 内のノートブック、クエリエディタからのみ利用可能です。  
+
+また、DataZone の [SearchListings API](https://docs.aws.amazon.com/ja_jp/datazone/latest/APIReference/API_SearchListings.html) を使用すると、アセットに対してセマンティック (自然言語) 検索が可能です。  
+さらに [GetListing API](https://docs.aws.amazon.com/datazone/latest/APIReference/API_GetListing.html) でアセットに付与されたビジネスメタデータを取得できるので、これらの API を活用することで、データ基盤向けの AI エージェントを作成することも可能です。  
+自前の AI エージェントに関しては、Github にサンプルリポジトリもあるので、こちらの [AWS ブログ](https://aws.amazon.com/jp/blogs/news/ai-agent-ready-data-platform-overview-and-demo/)の内容が参考になりそうです。  
+この AWS ブログのサンプルリポジトリでは、SearchListings API を呼ぶ時、searchText を英語に翻訳していますが、動作確認したところ、アセットのビジネスメタデータを日本語で記述している場合、日本語のままの方が検索精度が高かったので、日本語のままでも良さそうでした。
+
+### 2. データコラボレーション
 
 アセットを作成してパブリッシュすることで、ドメインに属する**全プロジェクトのメンバーがカタログからデータを探索・発見できる**ようになります。さらに、サブスクリプション（申請→承認）を通じて実データへのアクセス権が付与されるため、データオーナーがガバナンスを維持しながらも、チーム間のデータコラボレーションをスムーズに実現できます。  
 複数のアセットを一つの[データプロダクト](https://docs.aws.amazon.com/sagemaker-unified-studio/latest/userguide/data-products.html)としてまとめてパブリッシュ/サブスクリプションしたりもできます。
 
-### 2. データガバナンス
+### 3. データガバナンス
 
 アセットは単にデータを共有するだけでなく、**サブスクリプション（申請→承認）を軸にしたアクセス制御**の起点になります。前述の通り、パブリッシュしても実データの参照にはサブスクリプションが必要で、データオーナーが承認することで初めてアクセス権が付与されます。
 
@@ -208,22 +222,6 @@ graph TB
 #### 適用したフィルターの確認
 
 データオーナー（アセットを公開したプロジェクトのメンバー）は、「どの購読プロジェクトにどのフィルターを適用したか」を後から確認できます。UI では公開プロジェクトの **Data タブ → 購読一覧**から各購読の適用フィルターを確認でき、API では `list-subscriptions` / `list-subscription-grants` で購読を一覧し、各グラントに含まれる `assetScope.filterIds` から適用されているフィルターの ID を取得できます。 -->
-
-### 3. Data Agent の活用
-
-[SageMaker Data Agent](https://docs.aws.amazon.com/sagemaker-unified-studio/latest/userguide/data-agent-business-catalog.html) ではアセットに付与されたビジネスメタデータを参照して、自然言語でデータセットを探索したり、SQL、Python などのコード生成を行うことが出来ます。Data Agent を活用した **AI Ready なデータ基盤**を構築する上で、アセット登録とビジネスメタデータの整備は重要です。  
-具体的にはアセット、ビジネスメタデータを整備することで Data Agent を利用して以下のようなことが可能になります。
-
-1. データの探索
-- 「顧客離脱に関するデータはありますか？」
-  - 該当するデータを保有する可能性があるアセットを一覧で提示してくれる。
-
-2. コード生成
-- 「2026 年 Q3-Q4 における顧客維持率を計算してください。」
-  - 適切なテーブル(アセット)とカラムを使用して、SQL or PySpark コードを生成してくれる。
-
-
-なお、現時点で SageMaker Data Agent は Unified Studio 内のノートブック、クエリエディタからのみ利用可能です。
 
 ## 次のステップ
 
